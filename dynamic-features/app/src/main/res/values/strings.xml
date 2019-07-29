@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright 2018 Google LLC.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">On Demand Sample</string>
+    <string name="load_feature_kotlin">Start Kotlin Feature</string>
+    <string name="load_feature_java">Start Java Feature</string>
+    <string name="load_native_code">Start Native Feature</string>
+    <string name="load_assets">Show assets</string>
+    <string name="loading">Loading</string>
+    <string name="instructions">Press a button to perform an action.</string>
+    <string name="install_all_features_now">Install all features now</string>
+    <string name="load_all_features_deferred">Load all features deferred</string>
+    <string name="install_all_deferred">Install deferred</string>
+    <string name="request_uninstall">Request module uninstall</string>
+    <string name="btn_launch_initial_install">Launch initially installed feature</string>
+    <string name="instant_dynamic_feature_split_install">request instant split install</string>
+    <string name="instant_dynamic_feature_url_load">request install split install via url</string>
+    <string name="force_polish">Force Polish</string>
+    <string name="force_english">Force English</string>
+    <string name="user_cancelled">The user cancelled module installation</string>
+    <string name="loading_module">Loading module %1$s</string>
+    <string name="loading_language">Loading language %1$s</string>
+    <string name="already_installed">Already installed</string>
+    <string name="starting_install_for">Starting install for %1$s</string>
+    <string name="downloading">Downloading %1$s</string>
+    <string name="installing">Installing %1$s</string>
+    <string name="error_for_module">Error: %1$i for module %2$s</string>
+    <string name="asset_content">Asset content</string>
+    <string name="title_initialinstall">Initial Installation</string>
+</resources>

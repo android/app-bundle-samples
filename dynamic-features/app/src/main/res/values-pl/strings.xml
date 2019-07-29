@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2019 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">Przykład modułów na żądanie</string>
+    <string name="force_polish">Wymuś język polski</string>
+    <string name="install_all_deferred">Zainstaluj później</string>
+    <string name="install_all_features_now">Zainstaluj wszystkie funkcje teraz</string>
+    <string name="instant_dynamic_feature_split_install">Zażądaj instalacji modułu instant</string>
+    <string name="instant_dynamic_feature_url_load">Zażądaj instalacji modułu instant poprzez URL</string>
+    <string name="instructions">Naciśnij przycisk, aby wywołać akcję</string>
+    <string name="load_all_features_deferred">Załaduj wszystkie funkcje później</string>
+    <string name="load_assets">Pokaż assety</string>
+    <string name="load_feature_java">Uruchom funkcję w Javie</string>
+    <string name="load_feature_kotlin">Uruchom funkcję w Kotlinie</string>
+    <string name="load_native_code">Uruchom natywną funkcję</string>
+    <string name="loading">Ładowanie</string>
+    <string name="request_uninstall">Zażądaj odinstalowania modułów</string>
+    <string name="force_english">Wymuś język angielski</string>
+    <string name="user_cancelled">Użytkownik anulował instalację modułu</string>
+    <string name="loading_module">Ładowanie modułu %1$s</string>
+    <string name="already_installed">Już zainstalowany</string>
+    <string name="starting_install_for">Rozpoczynanie instalacji %1$s</string>
+    <string name="loading_language">Ładowanie języka %1$s</string>
+    <string name="downloading">Ściąganie %1$s</string>
+    <string name="installing">Instalowanie %1$s</string>
+    <string name="error_for_module">Błąd: %1$i dla modułu %2$s</string>
+    <string name="asset_content">Zawartość assetu</string>
+</resources>
