@@ -1,0 +1,24 @@
+# GOOGLE SAMPLE PACKAGING DATA
+#
+# This file is used by Google as part of our samples packaging process.
+# End users may safely ignore this file. It has no relevance to other systems.
+---
+status:       PUBLISHED
+technologies: [Android]
+categories:   [Instant Apps]
+languages:    [Kotlin, Java, Native]
+solutions:    [Mobile]
+
+github:       android/app-bundle
+
+level:        INTERMEDIATE
+
+apiRefs:
+    - google:com.google.android.play.core.splitinstall.SplitInstallManager
+    - google:com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+    - google:com.google.android.play.core.splitinstall.SplitInstallRequest
+    - google:com.google.android.play.core.splitinstall.SplitInstallSessionState
+    - google:com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
+    - google:com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
+
+license: apache2
