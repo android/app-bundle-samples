@@ -20,7 +20,7 @@
 ---
 status:       PUBLISHED
 technologies: [Android]
-categories:   [Instant Apps]
+categories:   [App Bundle]
 languages:    [Kotlin]
 solutions:    [Mobile]
 github:       googlesamples/android-instant-apps
