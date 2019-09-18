@@ -1,5 +1,6 @@
 Android App Bundle Samples Repository
 =====================================
 
-This repository contains a set of individual Android Studio projects to help you get
-started writing/understanding Android App Bundles.
+This repo has been migrated to [github.com/android/app-bundle][1]. Please check that repo for future updates. Thank you!
+
+[1]: https://github.com/android/app-bundle
