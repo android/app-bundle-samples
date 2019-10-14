@@ -23,6 +23,6 @@ technologies: [Android]
 categories:   [App Bundle]
 languages:    [Java]
 solutions:    [Mobile]
-github:       googlesamples/android-instant-apps
+github:       android/app-bundle-samples
 level:        ADVANCED
 license: apache2
