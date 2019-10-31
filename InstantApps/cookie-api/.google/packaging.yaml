@@ -23,7 +23,7 @@ technologies: [Android]
 categories:   [App Bundle]
 languages:    [Kotlin]
 solutions:    [Mobile]
-github:       googlesamples/android-instant-apps
+github:       android/app-bundle-samples
 
 level:        ADVANCED
 

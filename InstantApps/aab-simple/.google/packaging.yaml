@@ -23,7 +23,7 @@ categories:   [App Bundle]
 languages:    [Kotlin, Java, Native]
 solutions:    [Mobile]
 
-github:       android/app-bundle
+github:       android/app-bundle-samples
 
 level:        INTERMEDIATE
 
