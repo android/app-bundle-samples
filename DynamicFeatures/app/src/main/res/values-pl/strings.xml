@@ -18,6 +18,7 @@
 <resources>
     <string name="app_name">Przykład modułów na żądanie</string>
     <string name="force_polish">Wymuś język polski</string>
+    <string name="btn_launch_initial_install">Załaduj wstępnie zainstalowany moduł</string>
     <string name="install_all_deferred">Zainstaluj później</string>
     <string name="install_all_features_now">Zainstaluj wszystkie funkcje teraz</string>
     <string name="instant_dynamic_feature_split_install">Zażądaj instalacji modułu instant</string>
@@ -35,6 +36,7 @@
     <string name="loading_module">Ładowanie modułu %1$s</string>
     <string name="already_installed">Już zainstalowany</string>
     <string name="starting_install_for">Rozpoczynanie instalacji %1$s</string>
+    <string name="title_initialinstall">Wstępna instalacja</string>
     <string name="loading_language">Ładowanie języka %1$s</string>
     <string name="downloading">Ściąganie %1$s</string>
     <string name="installing">Instalowanie %1$s</string>
