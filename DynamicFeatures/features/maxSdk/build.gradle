@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC.
+ * Copyright 2018 Google LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ android {
     compileSdkVersion versions.compileSdk
 
     defaultConfig {
+
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -41,4 +42,5 @@ dependencies {
     androidTestImplementation "androidx.appcompat:appcompat:${versions.appcompat}"
     androidTestImplementation "com.google.android.play:core:${versions.playcore}"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+
 }

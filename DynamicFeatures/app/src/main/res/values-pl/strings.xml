@@ -26,6 +26,7 @@
     <string name="instructions">Naciśnij przycisk, aby wywołać akcję</string>
     <string name="load_all_features_deferred">Załaduj wszystkie funkcje później</string>
     <string name="load_assets">Pokaż assety</string>
+    <string name="start_maxsdk">Uruchom funkcję z maxSdk</string>
     <string name="load_feature_java">Uruchom funkcję w Javie</string>
     <string name="load_feature_kotlin">Uruchom funkcję w Kotlinie</string>
     <string name="load_native_code">Uruchom natywną funkcję</string>

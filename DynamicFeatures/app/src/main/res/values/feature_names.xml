@@ -22,6 +22,7 @@
     <string name="module_feature_java">java</string>
     <string name="module_assets">assets</string>
     <string name="module_large">large</string>
+    <string name="module_feature_maxsdk">maxSdk</string>
     <string name="module_native">native</string>
     <string name="module_initial">initial</string>
     <string name="module_instant_feature_split_install">split</string>

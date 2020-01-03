@@ -18,14 +18,14 @@ package com.google.android.samples.dynamicfeatures.ondemand
 
 import android.os.Bundle
 import com.google.android.samples.dynamicfeatures.BaseSplitActivity
-import com.google.android.samples.dynamicfeatures.ondemand.kotlin.R
+import com.google.android.samples.dynamicfeatures.ondemand.maxsdk.R
 
-/** A simple Activity displaying some text, written in Kotlin. */
-class KotlinSampleActivity : BaseSplitActivity() {
+/** A basic Activity displaying some text. */
+class MaxSdkSampleActivity : BaseSplitActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_feature_kotlin)
+        setContentView(R.layout.activity_feature_maxsdk)
     }
 
 }

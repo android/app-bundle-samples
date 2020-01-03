@@ -49,6 +49,7 @@ android {
                        ':features:initialInstall',
                        ':features:java',
                        ':features:native',
+                       ':features:maxSdk',
                        ':features:assets',
                        ':instant:split',
                        ':instant:url'

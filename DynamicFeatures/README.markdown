@@ -24,6 +24,7 @@ Each feature as some distinctly unique characteristics.
 `features/assets` -> Feature containing only assets.
 `features/kotlin` -> Feature written in Kotlin.
 `features/java` -> Feature written in Java.
+`features/maxSdk` -> Conditionally delivered feature based on max sdk version
 `features/native` -> Feature written in Kotlin using JNI.
 `instant/split` -> Instant Feature without an URL route. Loaded using Split
 Install API
