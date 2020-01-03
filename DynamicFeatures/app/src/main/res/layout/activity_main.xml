@@ -70,7 +70,19 @@
         app:layout_constraintBottom_toTopOf="@+id/btn_install_all_now"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_load_native" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_start_maxsdk" />
+
+    <Button
+        android:id="@+id/btn_start_maxsdk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/start_maxsdk"
+        app:layout_constraintBottom_toTopOf="@+id/btn_load_native"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_load_assets" />
 
     <Button
         android:id="@+id/btn_load_native"
@@ -217,8 +229,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/lang_pl"
         tools:layout_editor_absoluteY="642dp"
-        app:layout_constraintTop_toTopOf="@+id/lang_pl"
-        />
+        app:layout_constraintTop_toTopOf="@+id/lang_pl" />
 
     <Button
         android:id="@+id/lang_pl"

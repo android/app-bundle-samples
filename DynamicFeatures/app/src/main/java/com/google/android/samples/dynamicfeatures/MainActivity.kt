@@ -40,7 +40,7 @@ class MainActivity : BaseSplitActivity() {
     /** Listener used to handle changes in state for install requests. */
     private val listener = SplitInstallStateUpdatedListener { state ->
         val multiInstall = state.moduleNames().size > 1
-        val langsInstall = !state.languages().isEmpty()
+        val langsInstall = state.languages().isNotEmpty()
 
         val names = if (langsInstall) {
             // We always request the installation of a single language in this sample
@@ -98,6 +98,7 @@ class MainActivity : BaseSplitActivity() {
     private val moduleKotlin by lazy { getString(R.string.module_feature_kotlin) }
     private val moduleJava by lazy { getString(R.string.module_feature_java) }
     private val moduleNative by lazy { getString(R.string.module_native) }
+    private val moduleMaxSdk by lazy { getString(R.string.module_feature_maxsdk) }
     private val moduleAssets by lazy { getString(R.string.module_assets) }
     private val moduleInitial by lazy { getString(R.string.module_initial) }
     private val instantModule by lazy { getString(R.string.module_instant_feature_split_install) }
@@ -114,6 +115,22 @@ class MainActivity : BaseSplitActivity() {
                 R.id.btn_load_kotlin -> loadAndLaunchModule(moduleKotlin)
                 R.id.btn_load_java -> loadAndLaunchModule(moduleJava)
                 R.id.btn_load_assets -> loadAndLaunchModule(moduleAssets)
+                R.id.btn_start_maxsdk -> {
+                    /*
+                     Check if the module is available in the first place.
+                     In a real world app functionality might be different for a maxSdk
+                     conditional module. Here we just show a toast to highlight that the app is
+                     running above the set maxSdk.
+                     */
+                    if (!manager.installedModules.contains(moduleMaxSdk)) {
+                        Toast.makeText(
+                                this@MainActivity,
+                                "Not installed by condition, loading before launch",
+                                Toast.LENGTH_LONG)
+                                .show()
+                    }
+                    loadAndLaunchModule(moduleMaxSdk)
+                }
                 R.id.btn_load_native -> loadAndLaunchModule(moduleNative)
                 R.id.btn_install_all_now -> installAllFeaturesNow()
                 R.id.btn_install_all_deferred -> installAllFeaturesDeferred()
@@ -279,6 +296,7 @@ class MainActivity : BaseSplitActivity() {
                 moduleKotlin -> launchActivity(KOTLIN_SAMPLE_CLASSNAME)
                 moduleJava -> launchActivity(JAVA_SAMPLE_CLASSNAME)
                 moduleInitial -> launchActivity(INITIAL_INSTALL_CLASSNAME)
+                moduleMaxSdk -> launchActivity(MAX_SDK_CLASSNAME)
                 moduleNative -> launchActivity(NATIVE_SAMPLE_CLASSNAME)
                 moduleAssets -> displayAssets()
                 instantModule -> launchActivity(INSTANT_SAMPLE_CLASSNAME)
@@ -368,6 +386,7 @@ private const val KOTLIN_SAMPLE_CLASSNAME = "$PACKAGE_NAME_ONDEMAND.KotlinSample
 private const val JAVA_SAMPLE_CLASSNAME = "$PACKAGE_NAME_ONDEMAND.JavaSampleActivity"
 private const val NATIVE_SAMPLE_CLASSNAME = "$PACKAGE_NAME_ONDEMAND.NativeSampleActivity"
 private const val INITIAL_INSTALL_CLASSNAME = "$PACKAGE_NAME.InitialInstallActivity"
+private const val MAX_SDK_CLASSNAME = "$PACKAGE_NAME.MaxSdkSampleActivity"
 private const val INSTANT_SAMPLE_CLASSNAME = "$INSTANT_PACKAGE_NAME.SplitInstallInstantActivity"
 private const val CONFIRMATION_REQUEST_CODE = 1
 private const val TAG = "DynamicFeatures"

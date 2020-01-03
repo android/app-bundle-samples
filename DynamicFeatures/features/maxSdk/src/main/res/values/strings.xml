@@ -15,5 +15,5 @@
   -->
 
 <resources>
-    <string name="content_text">This is a dynamic feature, written in \nKotlin\n which can be loaded on demand.</string>
+    <string name="content_text">This is a dynamic feature, which is conditionally delivered based on max sdk version.</string>
 </resources>
