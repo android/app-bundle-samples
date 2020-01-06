@@ -22,9 +22,11 @@ android {
     compileSdkVersion versions.compileSdk
 
     defaultConfig {
+
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 }
 
@@ -38,7 +40,6 @@ dependencies {
 
     // When using API in base, some dependencies might have to be re-added for test implementation.
     androidTestImplementation "androidx.appcompat:appcompat:${versions.appcompat}"
-
+    androidTestImplementation "com.google.android.play:core:${versions.playcore}"
     androidTestImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-
 }
