@@ -19,12 +19,11 @@
     package="com.google.android.samples.dynamicfeatures.initialinstall">
 
     <dist:module
-        dist:instant="false"
         dist:title="@string/module_initial">
+        <dist:fusing dist:include="true" />
         <dist:delivery>
             <dist:install-time />
         </dist:delivery>
-        <dist:fusing dist:include="true" />
     </dist:module>
 
     <application>

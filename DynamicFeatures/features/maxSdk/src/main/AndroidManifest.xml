@@ -20,9 +20,11 @@
     package="com.google.android.samples.dynamicfeatures.ondemand.kotlin">
 
     <dist:module
-        dist:onDemand="true"
         dist:title="@string/module_feature_kotlin">
         <dist:fusing dist:include="true" />
+        <dist:delivery>
+            <dist:on-demand />
+        </dist:delivery>
     </dist:module>
 
     <application>

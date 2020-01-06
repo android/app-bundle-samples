@@ -21,9 +21,11 @@
     package="com.google.android.samples.dynamicfeatures.ondemand.assets">
 
     <dist:module
-        dist:onDemand="true"
         dist:title="@string/module_assets">
         <dist:fusing dist:include="true" />
+        <dist:delivery>
+            <dist:on-demand />
+        </dist:delivery>
     </dist:module>
 
     <!-- This feature module doesn't contain code. -->

@@ -24,9 +24,11 @@
         instant enabled modules will be excluded -->
     <dist:module
         dist:instant="true"
-        dist:onDemand="false"
         dist:title="@string/title_url_instant_module">
         <dist:fusing dist:include="true" />
+        <dist:delivery>
+            <dist:install-time />
+        </dist:delivery>
     </dist:module>
 
     <application>
