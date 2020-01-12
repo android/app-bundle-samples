@@ -20,9 +20,12 @@
     package="com.google.android.samples.dynamicfeatures.ondemand.ccode">
 
     <dist:module
-        dist:onDemand="true"
+        dist:onDemand="false"
         dist:title="@string/module_native">
         <dist:fusing dist:include="true" />
+        <dist:device-feature	
+		dist:name="android.hardware.opengles.version"	
+		dist:version="0x00030001"/>
     </dist:module>
 
     <application>
