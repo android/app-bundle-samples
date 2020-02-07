@@ -15,12 +15,12 @@ This sample showcases the following uses of the Dynamic Feature Navigator:
 
 ### Screenshots
 
-![Image of sample's main screen][screenshots/main.png]
-![Image of sample's feature screen][screenshots/feature.png]
+<img src="screenshots/main.png" alt="Image of sample's main screen" width="25%" />
+<img src="screenshots/feature.png" alt="Image of sample's feature screen" width="25%" />
 
 License
 -------
-
+```
 Copyright 2020 The Android Open Source Project, Inc.
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor
@@ -37,3 +37,4 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
+```
