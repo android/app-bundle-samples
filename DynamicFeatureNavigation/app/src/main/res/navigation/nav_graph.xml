@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2020 Google LLC.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/defaultMonitorFragment"
+        android:name="com.google.android.samples.dynamicnavigator.DefaultDynamicNavigationFragment"
+        android:label="defaultMonitorFragment" />
+
+    <fragment
+        android:id="@+id/customMonitorFragment"
+        android:name="com.google.android.samples.dynamicnavigator.CustomMonitorDynamicNavigationFragment"
+        android:label="customMonitorFragment" />
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.google.android.samples.dynamicnavigator.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_featureFragment"
+            app:destination="@id/featureFragment" />
+    </fragment>
+
+    <activity
+        android:id="@+id/featureActivity"
+        android:name="com.google.android.samples.dynamicnavigator.feature.FeatureActivity"
+        android:label="activity_feature"
+        app:moduleName="dynamicfeature"
+        tools:layout="@layout/fragment_feature" />
+
+    <fragment
+        android:id="@+id/featureFragment"
+        android:name="com.google.android.samples.dynamicnavigator.feature.FeatureFragment"
+        android:label="fragment_feature"
+        app:moduleName="dynamicfeature"
+        tools:layout="@layout/fragment_feature" />
+
+    <navigation
+        android:id="@+id/nestedGraph"
+        app:moduleName="dynamicfeature"
+        app:startDestination="@id/featureFragmentNested">
+        <fragment
+            android:id="@+id/featureFragmentNested"
+            android:name="com.google.android.samples.dynamicnavigator.feature.FeatureFragment"
+            android:label="fragment_feature"
+            tools:layout="@layout/fragment_feature" />
+    </navigation>
+
+    <include-dynamic
+        android:id="@+id/includedGraph"
+        app:graphPackage="com.google.android.samples.dynamicnavigator.includedgraphfeature"
+        app:graphResName="included_feature_nav"
+        app:moduleName="includedgraphfeature" />
+
+</navigation>
