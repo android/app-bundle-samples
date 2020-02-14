@@ -1,3 +1,7 @@
+import com.android.build.gradle.api.ApkVariantOutput
+import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.api.BaseVariantOutput
+
 /*
  * Copyright 2020 Google LLC.
  *
@@ -53,4 +57,42 @@ dependencies {
     api("androidx.navigation:navigation-dynamic-features-fragment:2.3.0-alpha01")
     api("androidx.appcompat:appcompat:1.1.0")
     api("androidx.constraintlayout:constraintlayout:1.1.3")
+    implementation("com.google.android.play:core:1.6.5")
 }
+
+val bundletoolJar = project.rootDir.resolve("third_party/bundletool/bundletool-all-0.13.0.jar")
+
+android.applicationVariants.all(object : Action<ApplicationVariant> {
+    override fun execute(variant: ApplicationVariant) {
+        variant.outputs.forEach { output: BaseVariantOutput? ->
+            (output as? ApkVariantOutput)?.let { apkOutput: ApkVariantOutput ->
+                var filePath = apkOutput.outputFile.absolutePath
+                filePath = filePath.replaceAfterLast(".", "aab")
+                filePath = filePath.replace("build/outputs/apk/", "build/outputs/bundle/")
+                var outputPath = filePath.replace("build/outputs/bundle/", "build/outputs/apks/")
+                outputPath = outputPath.replaceAfterLast(".", "apks")
+
+                tasks.register<JavaExec>("buildApks${variant.name.capitalize()}") {
+                    classpath = files(bundletoolJar)
+                    args = listOf(
+                        "build-apks",
+                        "--overwrite",
+                        "--local-testing",
+                        "--bundle",
+                        filePath,
+                        "--output",
+                        outputPath
+                    )
+                    dependsOn("bundle${variant.name.capitalize()}")
+                }
+
+                tasks.register<JavaExec>("installApkSplitsForTest${variant.name.capitalize()}") {
+                    classpath = files(bundletoolJar)
+                    args = listOf("install-apks", "--apks", outputPath)
+                    dependsOn("buildApks${variant.name.capitalize()}")
+                }
+
+            }
+        }
+    }
+})
