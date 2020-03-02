@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/selectButton1"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:onClick="onClickPack1Btn"
+        android:text="Select Install Time Pack" />
+
+    <Button
+        android:id="@+id/selectButton2"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:onClick="onClickPack2Btn"
+        android:text="Select On Demand Pack" />
+
+    <Button
+        android:id="@+id/selectButton3"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:onClick="onClickPack3Btn"
+        android:text="Select Fast Follow Pack" />
+    <Button
+        android:id="@+id/requestInfoButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Request Pack Info"
+        android:onClick="onClickRequestInfoBtn" />
+
+    <Button
+        android:id="@+id/requestDownloadButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Request Download"
+        android:onClick="onClickRequestBtn" />
+
+    <Button
+        android:id="@+id/pauseDownloadButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Pause Download"
+        android:onClick="onClickPauseBtn" />
+
+    <Button
+        android:id="@+id/resumeDownloadButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Resume Download"
+        android:onClick="onClickResumeBtn" />
+    <Button
+        android:id="@+id/printLocationButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Print pack Location"
+        android:onClick="onClickPrintLocationBtn" />
+    <Button
+        android:id="@+id/cellularButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Show Cellular"
+        android:onClick="onClickShowCellularBtn" />
+
+    <TextView
+        android:id="@+id/infoView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>
