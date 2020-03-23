@@ -25,6 +25,5 @@ assetPack {
     // deliveryType can be install-time | on-demand | fast-follow
     dynamicDelivery {
         deliveryType = "on-demand"
-        instantDeliveryType = "on-demand"
     }
 }
