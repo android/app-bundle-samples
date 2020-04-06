@@ -15,5 +15,5 @@
   -->
 
 <resources>
-    <string name="content_text">To jest dynamiczna funkcja napisana w \nKotlinie\n, która może być załadowana na żądanie.</string>
+    <string name="content_text">To jest dynamiczna funkcja, która będzie instalowana warunkowo tylko do ustawionej maksymalnej wersji SDK.</string>
 </resources>

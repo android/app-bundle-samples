@@ -22,16 +22,16 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.android.samples.dynamicfeatures.ondemand.kotlin.R
+import com.google.android.samples.dynamicfeatures.ondemand.maxsdk.R
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class KotlinSampleActivityTest {
+class MaxSdkSampleActivityTest {
 
     @get:Rule
-    val rule = ActivityScenarioRule<KotlinSampleActivity>(KotlinSampleActivity::class.java)
+    val rule = ActivityScenarioRule<MaxSdkSampleActivity>(MaxSdkSampleActivity::class.java)
 
     @Test
     fun launchKotlinSampleActivity() {

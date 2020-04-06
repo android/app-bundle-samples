@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2018 Google LLC.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +16,21 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    package="com.google.android.samples.dynamicfeatures.ondemand.kotlin">
+    package="com.google.android.samples.dynamicfeatures.ondemand.maxsdk">
 
-    <dist:module
-        dist:title="@string/module_feature_kotlin">
+    <dist:module dist:title="@string/module_feature_maxsdk">
         <dist:fusing dist:include="true" />
         <dist:delivery>
-            <dist:on-demand />
+            <dist:install-time>
+                <dist:conditions>
+                    <dist:max-sdk dist:value="23" />
+                </dist:conditions>
+            </dist:install-time>
         </dist:delivery>
     </dist:module>
 
     <application>
-        <activity android:name="com.google.android.samples.dynamicfeatures.ondemand.KotlinSampleActivity">
+        <activity android:name="com.google.android.samples.dynamicfeatures.ondemand.MaxSdkSampleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>

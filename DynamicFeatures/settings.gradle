@@ -19,6 +19,7 @@ include ':app',
         ':features:java',
         ':features:kotlin',
         ':features:assets',
+        ':features:maxSdk',
         ':features:native',
         ':instant:split',
         ':instant:url'

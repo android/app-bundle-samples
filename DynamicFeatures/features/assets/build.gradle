@@ -23,10 +23,13 @@ android {
     defaultConfig {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
+        vectorDrawables.useSupportLibrary = true
     }
 }
 
 dependencies {
 
     implementation project(':app')
+
+    androidTestImplementation "com.google.android.play:core:${versions.playcore}"
 }
