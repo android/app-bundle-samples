@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    api("androidx.navigation:navigation-dynamic-features-fragment:2.3.0-alpha01")
+    api("androidx.navigation:navigation-dynamic-features-fragment:2.3.0-alpha05")
     api("androidx.appcompat:appcompat:1.1.0")
     api("androidx.constraintlayout:constraintlayout:1.1.3")
     implementation("com.google.android.play:core:1.6.5")
