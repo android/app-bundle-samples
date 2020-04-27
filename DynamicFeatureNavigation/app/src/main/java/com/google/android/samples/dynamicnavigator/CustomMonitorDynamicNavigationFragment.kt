@@ -44,9 +44,7 @@ class CustomMonitorDynamicNavigationFragment : Fragment(R.layout.fragment_naviga
         ).forEach { (targetViewId, destinationId) ->
             view.findViewById<Button>(targetViewId).setOnClickListener { button ->
                 val installMonitor = DynamicInstallMonitor()
-                val dynamicExtras = DynamicExtras.Builder()
-                    .setInstallMonitor(installMonitor)
-                    .build()
+                val dynamicExtras = DynamicExtras(installMonitor)
 
                 navController.navigate(destinationId, null, null, dynamicExtras)
 
