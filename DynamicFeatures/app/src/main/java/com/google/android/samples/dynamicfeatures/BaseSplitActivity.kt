@@ -29,6 +29,6 @@ abstract class BaseSplitActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         val ctx = LanguageHelper.getLanguageConfigurationContext(newBase)
         super.attachBaseContext(ctx)
-        SplitCompat.install(this)
+        SplitCompat.installActivity(this)
     }
 }
