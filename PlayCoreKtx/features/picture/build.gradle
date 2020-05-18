@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
-include ':app',
-        ':features:picture',
-        ':features:randomcolor'
+apply plugin: 'com.android.dynamic-feature'
+apply plugin: 'kotlin-android'
+
+android {
+
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    viewBinding.enabled = true
+
+}
+
+dependencies {
+    implementation project(':app')
+    implementation "androidx.palette:palette-ktx:1.0.0"
+}

@@ -20,14 +20,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.play.core.ktx.AppUpdateResult
+import com.google.android.play.core.ktx.AppUpdateResult.Available
+import com.google.android.play.core.ktx.AppUpdateResult.Downloaded
+import com.google.android.play.core.ktx.AppUpdateResult.InProgress
+import com.google.android.play.core.ktx.AppUpdateResult.NotAvailable
 import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.totalBytesToDownload
 import com.google.android.samples.dynamicfeatures.R
+import com.google.android.samples.dynamicfeatures.R.string
 import com.google.android.samples.dynamicfeatures.databinding.FragmentMainBinding
 import com.google.android.samples.dynamicfeatures.state.EventObserver
 import com.google.android.samples.dynamicfeatures.state.InstallViewModel
@@ -47,75 +53,85 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         bindings = FragmentMainBinding.bind(view)
         with(bindings) {
             btnInvokeRandom.setOnClickListener { installViewModel.invokeRandomColor() }
-            btnInvokePalette.setOnClickListener { installViewModel.invokePalette() }
+            btnInvokePalette.setOnClickListener { installViewModel.invokePictureSelection() }
             btnUpdate.setOnClickListener { updateViewModel.invokeUpdate() }
         }
 
         installViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
 
-        installViewModel.moduleStatus.observe(viewLifecycleOwner, Observer { status ->
-            with(bindings) {
-                btnInvokePalette.isEnabled = status !is ModuleStatus.Unavailable
-                when (status) {
-                    ModuleStatus.Available -> {
-                        btnInvokePalette.text = getString(R.string.install)
-                    }
-                    is ModuleStatus.Installing -> {
-                        btnInvokePalette.text = getString(
-                            R.string.installing,
-                            (status.progress * 100).toInt()
-                        )
-                    }
-                    ModuleStatus.Unavailable -> {
-                        btnInvokePalette.isEnabled = false
-                        btnInvokePalette.text = getString(R.string.feature_not_available)
-                    }
-                    ModuleStatus.Installed -> {
-                        btnInvokePalette.text = getString(R.string.start)
-                    }
-                    is ModuleStatus.NeedsConfirmation -> {
-                        installViewModel.startConfirmationDialogForResult(
-                            status.state,
-                            requireActivity(),
-                            INSTALL_CONFIRMATION_REQ_CODE
-                        )
-                    }
-                }
-            }
+        installViewModel.pictureModuleStatus.observe(viewLifecycleOwner, Observer { status ->
+            updateModuleButton(bindings.btnInvokePalette, status)
+        })
+
+        installViewModel.randomColorModuleStatus.observe(viewLifecycleOwner, Observer { status ->
+            updateModuleButton(bindings.btnInvokePalette, status)
         })
 
         updateViewModel.updateStatus.observe(
             viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
-                when (updateResult) {
-                    AppUpdateResult.NotAvailable -> bindings.btnUpdate.visibility = View.GONE
-                    is AppUpdateResult.Available -> {
-                        with(bindings.btnUpdate) {
-                            visibility = View.VISIBLE
-                            isEnabled = true
-                            text = context.getString(R.string.start_update)
-                        }
-                    }
-                    is AppUpdateResult.InProgress -> {
-                        with(bindings.btnUpdate) {
-                            visibility = View.VISIBLE
-                            isEnabled = false
-                            val updateProgress =
-                                updateResult.installState.bytesDownloaded * 100 /
-                                    updateResult.installState.totalBytesToDownload
-                            text = context.getString(R.string.downloading_update, updateProgress)
-                        }
-                    }
-                    is AppUpdateResult.Downloaded -> {
-                        with(bindings.btnUpdate) {
-                            visibility = View.VISIBLE
-                            isEnabled = true
-                            text = context.getString(R.string.press_to_complete_update)
-                        }
-                    }
-                }
+                updateUpdateButton(updateResult)
             })
 
         updateViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
+    }
+
+    private fun updateModuleButton(target: Button, status: ModuleStatus) {
+        target.isEnabled = status !is ModuleStatus.Unavailable
+        when (status) {
+            ModuleStatus.Available -> {
+                target.text = getString(R.string.install)
+            }
+            is ModuleStatus.Installing -> {
+                target.text = getString(
+                    R.string.installing,
+                    (status.progress * 100).toInt()
+                )
+            }
+            ModuleStatus.Unavailable -> {
+                target.isEnabled = false
+                target.text = getString(R.string.feature_not_available)
+            }
+            ModuleStatus.Installed -> {
+                target.text = getString(R.string.start)
+            }
+            is ModuleStatus.NeedsConfirmation -> {
+                installViewModel.startConfirmationDialogForResult(
+                    status.state,
+                    requireActivity(),
+                    INSTALL_CONFIRMATION_REQ_CODE
+                )
+            }
+        }
+    }
+
+    private fun updateUpdateButton(updateResult: AppUpdateResult) {
+        when (updateResult) {
+            NotAvailable -> bindings.btnUpdate.visibility = View.GONE
+            is Available -> {
+                with(bindings.btnUpdate) {
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                    text = context.getString(string.start_update)
+                }
+            }
+            is InProgress -> {
+                with(bindings.btnUpdate) {
+                    visibility = View.VISIBLE
+                    isEnabled = false
+                    val updateProgress =
+                        updateResult.installState.bytesDownloaded * 100 /
+                            updateResult.installState.totalBytesToDownload
+                    text = context.getString(string.downloading_update, updateProgress)
+                }
+            }
+            is Downloaded -> {
+                with(bindings.btnUpdate) {
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                    text = context.getString(string.press_to_complete_update)
+                }
+            }
+        }
     }
 
     /** This is needed to handle the result of the manager.startConfirmationDialogForResult

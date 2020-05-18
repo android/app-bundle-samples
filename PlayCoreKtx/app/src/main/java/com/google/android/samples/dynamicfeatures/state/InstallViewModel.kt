@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class InstallViewModel(val app: Application) : AndroidViewModel(app) {
@@ -57,81 +58,107 @@ class InstallViewModel(val app: Application) : AndroidViewModel(app) {
 //    private val _navigationEvents = MutableLiveData<Event<String>>()
 //    val navigationEvents: LiveData<Event<String>> = _navigationEvents
 
-    val moduleStatus: LiveData<ModuleStatus> = manager.requestProgressFlow()
-        .filter { state -> state.moduleNames.contains(
-            RANDOM_COLOR_MODULE
-        ) }
-        .map { state ->
-            Log.d("STATE", state.toString())
-            when (state.status) {
-                SplitInstallSessionStatus.CANCELED -> Available
-                SplitInstallSessionStatus.CANCELING -> Installing(0.0)
-                SplitInstallSessionStatus.DOWNLOADED -> Installing(1.0)
-                SplitInstallSessionStatus.DOWNLOADING -> Installing(
-                    state.bytesDownloaded.toDouble() / state.totalBytesToDownload
-                )
-                SplitInstallSessionStatus.FAILED -> {
-                    _toastMessage.value =
-                        Event(
-                            app.getString(
-                                string.error_for_module,
-                                state.errorCode(),
-                                state.moduleNames()
-                            )
-                        )
-                    Available
-                }
-                SplitInstallSessionStatus.INSTALLED -> Installed
-                SplitInstallSessionStatus.INSTALLING -> Installing(1.0)
-                SplitInstallSessionStatus.PENDING -> Installing(0.0)
-                SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> NeedsConfirmation(
-                    state
-                )
-                SplitInstallSessionStatus.UNKNOWN -> Unavailable
-                else -> Unavailable
+    val randomColorModuleStatus = getStatusLiveDataForModule(RANDOM_COLOR_MODULE)
+    val pictureModuleStatus = getStatusLiveDataForModule(PICTURE_MODULE)
+
+    private fun getStatusLiveDataForModule(moduleName: String): LiveData<ModuleStatus> {
+        return manager.requestProgressFlow()
+            .filter { state ->
+                state.moduleNames.contains(moduleName)
             }
-        }.catch {
-            _toastMessage.value =
-                Event(
-                    "Something went wrong. No install progress will be reported."
-                )
-            emit(Unavailable)
-        }.asLiveData()
+            .map { state ->
+                Log.d("STATE", state.toString())
+                when (state.status) {
+                    SplitInstallSessionStatus.CANCELED -> Available
+                    SplitInstallSessionStatus.CANCELING -> Installing(0.0)
+                    SplitInstallSessionStatus.DOWNLOADED -> Installing(1.0)
+                    SplitInstallSessionStatus.DOWNLOADING -> Installing(
+                        state.bytesDownloaded.toDouble() / state.totalBytesToDownload
+                    )
+                    SplitInstallSessionStatus.FAILED -> {
+                        _toastMessage.value =
+                            Event(
+                                app.getString(
+                                    string.error_for_module,
+                                    state.errorCode(),
+                                    state.moduleNames()
+                                )
+                            )
+                        Available
+                    }
+                    SplitInstallSessionStatus.INSTALLED -> Installed
+                    SplitInstallSessionStatus.INSTALLING -> Installing(1.0)
+                    SplitInstallSessionStatus.PENDING -> Installing(0.0)
+                    SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> NeedsConfirmation(
+                        state
+                    )
+                    SplitInstallSessionStatus.UNKNOWN -> Unavailable
+                    else -> Unavailable
+                }
+            }.catch {
+                _toastMessage.value =
+                    Event(
+                        "Something went wrong. No install progress will be reported."
+                    )
+                emit(Unavailable)
+            }.asLiveData()
+    }
 
     fun invokeRandomColor() {
-        if (manager.installedModules.contains(
-                RANDOM_COLOR_MODULE
-            )) {
-            // TODO invoke the Palette UI and do something
-            app.startActivity(
-                Intent(
-                    app,
-                    Class.forName(
-                        "com.google.android.samples.dynamicfeatures.ondemand.RandomColorActivity"
-                    )
-                ).apply {
-                    flags = FLAG_ACTIVITY_NEW_TASK
-                })
-            _toastMessage.value = Event("Invoked $RANDOM_COLOR_MODULE!")
+        openActivityInOnDemandModule(
+            RANDOM_COLOR_MODULE,
+            "com.google.android.samples.dynamicfeatures.ondemand.RandomColorActivity"
+        )
+    }
+
+    fun invokePictureSelection() {
+        openActivityInOnDemandModule(
+            PICTURE_MODULE,
+            "com.google.android.samples.dynamicfeatures.ondemand.PictureActivity"
+        )
+    }
+
+    private fun openActivityInOnDemandModule(moduleName: String, activityName: String) {
+        if (manager.installedModules.contains(moduleName)) {
+            startActivity(activityName)
+            _toastMessage.value = Event("Invoked $moduleName")
         } else {
-            if (moduleStatus.value is NeedsConfirmation) {
-                // TODO invoke confirmation UI
+            if (when (moduleName) {
+                    RANDOM_COLOR_MODULE -> randomColorModuleStatus.value
+                    PICTURE_MODULE -> pictureModuleStatus.value
+                    else -> throw IllegalArgumentException("State not implemented")
+                } is NeedsConfirmation
+            ) {
+                _toastMessage.value = Event("Confirmation required (Not Implemented)")
+                TODO("Invoke confirmation UI")
             } else {
-                viewModelScope.launch {
-                    try {
-                        manager.requestInstall(modules = listOf(RANDOM_COLOR_MODULE))
-                    } catch (e: SplitInstallException) {
-                        _toastMessage.value =
-                            Event("Failed starting installation of $RANDOM_COLOR_MODULE")
-                    }
-                }
+                requestModuleInstallation(moduleName)
             }
         }
     }
 
-    fun invokePalette() {
-        // TODO: 14/05/2020 implement
-        _toastMessage.value = Event("Not implemented yet")
+    private fun requestModuleInstallation(moduleName: String) {
+        viewModelScope.launch {
+            try {
+                manager.requestInstall(
+                    modules = listOf(
+                        moduleName
+                    )
+                )
+            } catch (e: SplitInstallException) {
+                _toastMessage.value =
+                    Event(
+                        "Failed starting installation of $moduleName"
+                    )
+            }
+        }
+    }
+
+    private fun startActivity(activityFQCN: String) {
+        app.startActivity(
+            Intent(app, Class.forName(activityFQCN)).apply {
+                flags = FLAG_ACTIVITY_NEW_TASK
+            })
     }
 
     fun startConfirmationDialogForResult(
@@ -151,4 +178,4 @@ sealed class ModuleStatus {
 }
 
 const val RANDOM_COLOR_MODULE = "randomcolor"
-const val PALETTE_MODULE = "palette"
+const val PICTURE_MODULE = "picture"
