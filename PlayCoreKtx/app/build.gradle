@@ -53,7 +53,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    dynamicFeatures = [':features:palette']
+    dynamicFeatures = [':features:randomcolor']
 
     kotlinOptions {
         freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"

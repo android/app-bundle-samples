@@ -21,12 +21,13 @@
     <string name="instructions">Press a button to perform an action.</string>
     <string name="error_for_module">Error: %1$i for module %2$s</string>
     <string name="choose_color_from_photo">Choose color from photo</string>
+    <string name="random_color">Give me random colors</string>
     <string name="update_available">Update available</string>
     <string name="install">Install</string>
     <string name="installing">Installing… %1$d</string>
     <string name="feature_not_available">Feature not available</string>
     <string name="confirm">Confirm</string>
     <string name="start_update">Start update</string>
-    <string name="downloading_update">Downloading update… %1$d</string>
+    <string name="downloading_update">Downloading update… %1$i</string>
     <string name="press_to_complete_update">Press here to complete update</string>
 </resources>

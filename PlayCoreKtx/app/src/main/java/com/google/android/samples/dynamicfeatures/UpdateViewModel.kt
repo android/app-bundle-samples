@@ -41,6 +41,7 @@ class UpdateViewModel(val app: Application) : AndroidViewModel(app) {
 
     val toastMessage = MutableLiveData<Event<String>>()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun invokeUpdate() {
         when (val updateResult = updateStatus.value) {
             AppUpdateResult.NotAvailable -> toast("No update available")

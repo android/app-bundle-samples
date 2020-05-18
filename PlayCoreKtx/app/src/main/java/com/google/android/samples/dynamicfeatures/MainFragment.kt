@@ -28,23 +28,25 @@ import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.totalBytesToDownload
 import com.google.android.samples.dynamicfeatures.databinding.FragmentMainBinding
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val installViewModel by viewModels<InstallViewModel>()
     private val updateViewModel by viewModels<UpdateViewModel>()
     private lateinit var bindings: FragmentMainBinding
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         bindings = FragmentMainBinding.bind(view)
         with(bindings) {
+            btnInvokeRandom.setOnClickListener { installViewModel.invokeRandomColor() }
             btnInvokePalette.setOnClickListener { installViewModel.invokePalette() }
             btnUpdate.setOnClickListener { updateViewModel.invokeUpdate() }
         }
 
-        installViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver {
-            toastAndLog(it)
-        })
+        installViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
 
         installViewModel.moduleStatus.observe(viewLifecycleOwner, Observer { status ->
             with(bindings) {
@@ -55,8 +57,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     }
                     is ModuleStatus.Installing -> {
                         btnInvokePalette.text = getString(
-                                R.string.installing,
-                                (status.progress * 100).toInt()
+                            R.string.installing,
+                            (status.progress * 100).toInt()
                         )
                     }
                     ModuleStatus.Unavailable -> {
@@ -67,45 +69,47 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                         btnInvokePalette.text = getString(R.string.start)
                     }
                     is ModuleStatus.NeedsConfirmation -> {
-                        // TODO this should actually be automatic after first click
-                        // need to figure out how to do it
-                        btnInvokePalette.text = getString(R.string.confirm)
+                        installViewModel.startConfirmationDialogForResult(
+                            status.state,
+                            requireActivity(),
+                            INSTALL_CONFIRMATION_REQ_CODE
+                        )
                     }
                 }
             }
         })
 
-        updateViewModel.updateStatus.observe(viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
-            when (updateResult) {
-                AppUpdateResult.NotAvailable -> bindings.btnUpdate.visibility = View.GONE
-                is AppUpdateResult.Available -> {
-                    with(bindings.btnUpdate) {
-                        visibility = View.VISIBLE
-                        isEnabled = true
-                        text = context.getString(R.string.start_update)
+        updateViewModel.updateStatus.observe(
+            viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
+                when (updateResult) {
+                    AppUpdateResult.NotAvailable -> bindings.btnUpdate.visibility = View.GONE
+                    is AppUpdateResult.Available -> {
+                        with(bindings.btnUpdate) {
+                            visibility = View.VISIBLE
+                            isEnabled = true
+                            text = context.getString(R.string.start_update)
+                        }
+                    }
+                    is AppUpdateResult.InProgress -> {
+                        with(bindings.btnUpdate) {
+                            visibility = View.VISIBLE
+                            isEnabled = false
+                            val updateProgress =
+                                updateResult.installState.bytesDownloaded * 100 / updateResult.installState.totalBytesToDownload
+                            text = context.getString(R.string.downloading_update, updateProgress)
+                        }
+                    }
+                    is AppUpdateResult.Downloaded -> {
+                        with(bindings.btnUpdate) {
+                            visibility = View.VISIBLE
+                            isEnabled = true
+                            text = context.getString(R.string.press_to_complete_update)
+                        }
                     }
                 }
-                is AppUpdateResult.InProgress -> {
-                    with(bindings.btnUpdate) {
-                        visibility = View.VISIBLE
-                        isEnabled = false
-                        val updateProgress = updateResult.installState.bytesDownloaded * 100 / updateResult.installState.totalBytesToDownload
-                        text = context.getString(R.string.downloading_update, updateProgress)
-                    }
-                }
-                is AppUpdateResult.Downloaded -> {
-                    with(bindings.btnUpdate) {
-                        visibility = View.VISIBLE
-                        isEnabled = true
-                        text = context.getString(R.string.press_to_complete_update)
-                    }
-                }
-            }
-        })
+            })
 
-        updateViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver {
-            toastAndLog(it)
-        })
+        updateViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
     }
 
     /** This is needed to handle the result of the manager.startConfirmationDialogForResult

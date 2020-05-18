@@ -27,8 +27,7 @@ import com.google.android.play.core.splitcompat.SplitCompat
 abstract class BaseSplitActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
-        val ctx = newBase?.let { LanguageHelper.getLanguageConfigurationContext(it) }
-        super.attachBaseContext(ctx)
+        super.attachBaseContext(newBase)
         SplitCompat.install(this)
     }
 }

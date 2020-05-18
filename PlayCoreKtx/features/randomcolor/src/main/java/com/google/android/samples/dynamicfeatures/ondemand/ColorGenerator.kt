@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.ondemand
 
-import android.os.Bundle
+import android.graphics.Color
+import java.util.Random
 
-class MainActivity : BaseSplitActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().add(R.id.mycontainer, MainFragment()).commit()
-        }
-    }
+class ColorGenerator {
+    private val random = Random(System.currentTimeMillis())
+
+    val randomColor
+        /**
+         * Returns a random color in the range of 0x000000 to 0xffffff.
+         */
+        get() = random.color()
+
+    private fun Random.color() = Color.argb(colorBit(), colorBit(), colorBit(), colorBit())
+    private fun Random.colorBit() = nextInt(255)
 }

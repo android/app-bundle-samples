@@ -15,7 +15,10 @@
  */
 package com.google.android.samples.dynamicfeatures
 
+import android.app.Activity
 import android.app.Application
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -44,57 +47,85 @@ class InstallViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val _toastMessage = MutableLiveData<Event<String>>()
     val toastMessage: LiveData<Event<String>> = _toastMessage
-//
+
 //    private val _navigationEvents = MutableLiveData<Event<String>>()
 //    val navigationEvents: LiveData<Event<String>> = _navigationEvents
 
     val moduleStatus: LiveData<ModuleStatus> = manager.requestProgressFlow()
-            .filter { state -> state.moduleNames.contains(PALETTE_MODULE) }
-            .map { state ->
-                Log.d("STATE", state.toString())
-                when (state.status) {
-                    SplitInstallSessionStatus.CANCELED -> ModuleStatus.Available
-                    SplitInstallSessionStatus.CANCELING -> ModuleStatus.Installing(0.0)
-                    SplitInstallSessionStatus.DOWNLOADED -> ModuleStatus.Installing(1.0)
-                    SplitInstallSessionStatus.DOWNLOADING -> ModuleStatus.Installing(
-                            state.bytesDownloaded.toDouble() / state.totalBytesToDownload
+        .filter { state -> state.moduleNames.contains(RANDOM_COLOR_MODULE) }
+        .map { state ->
+            Log.d("STATE", state.toString())
+            when (state.status) {
+                SplitInstallSessionStatus.CANCELED -> ModuleStatus.Available
+                SplitInstallSessionStatus.CANCELING -> ModuleStatus.Installing(0.0)
+                SplitInstallSessionStatus.DOWNLOADED -> ModuleStatus.Installing(1.0)
+                SplitInstallSessionStatus.DOWNLOADING -> ModuleStatus.Installing(
+                    state.bytesDownloaded.toDouble() / state.totalBytesToDownload
+                )
+                SplitInstallSessionStatus.FAILED -> {
+                    _toastMessage.value = Event(
+                        app.getString(
+                            R.string.error_for_module, state.errorCode(),
+                            state.moduleNames()
+                        )
                     )
-                    SplitInstallSessionStatus.FAILED -> {
-                        _toastMessage.value = Event(app.getString(R.string.error_for_module, state.errorCode(),
-                                state.moduleNames()))
-                        ModuleStatus.Available
-                    }
-                    SplitInstallSessionStatus.INSTALLED -> ModuleStatus.Installed
-                    SplitInstallSessionStatus.INSTALLING -> ModuleStatus.Installing(1.0)
-                    SplitInstallSessionStatus.PENDING -> ModuleStatus.Installing(0.0)
-                    SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> ModuleStatus.NeedsConfirmation(state)
-                    SplitInstallSessionStatus.UNKNOWN -> ModuleStatus.Unavailable
-                    else -> ModuleStatus.Unavailable
+                    ModuleStatus.Available
                 }
-            }.catch {
-                _toastMessage.value = Event("Something went wrong. No install progress will be reported.")
-                emit(ModuleStatus.Unavailable)
-            }.asLiveData()
+                SplitInstallSessionStatus.INSTALLED -> ModuleStatus.Installed
+                SplitInstallSessionStatus.INSTALLING -> ModuleStatus.Installing(1.0)
+                SplitInstallSessionStatus.PENDING -> ModuleStatus.Installing(0.0)
+                SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> ModuleStatus.NeedsConfirmation(
+                    state
+                )
+                SplitInstallSessionStatus.UNKNOWN -> ModuleStatus.Unavailable
+                else -> ModuleStatus.Unavailable
+            }
+        }.catch {
+            _toastMessage.value =
+                Event("Something went wrong. No install progress will be reported.")
+            emit(ModuleStatus.Unavailable)
+        }.asLiveData()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun invokePalette() {
-        if (manager.installedModules.contains(PALETTE_MODULE)) {
+    fun invokeRandomColor() {
+        if (manager.installedModules.contains(RANDOM_COLOR_MODULE)) {
             // TODO invoke the Palette UI and do something
-            _toastMessage.value = Event("Invoked Palette!")
+            app.startActivity(
+                Intent(
+                    app,
+                    Class.forName(
+                        "com.google.android.samples.dynamicfeatures.ondemand.RandomColorActivity"
+                    )
+                ).apply {
+                    flags = FLAG_ACTIVITY_NEW_TASK
+                })
+            _toastMessage.value = Event("Invoked $RANDOM_COLOR_MODULE!")
         } else {
             if (moduleStatus.value is ModuleStatus.NeedsConfirmation) {
                 // TODO invoke confirmation UI
             } else {
                 viewModelScope.launch {
                     try {
-                        manager.requestInstall(modules = listOf(PALETTE_MODULE))
+                        manager.requestInstall(modules = listOf(RANDOM_COLOR_MODULE))
                     } catch (e: SplitInstallException) {
-                        _toastMessage.value = Event("Failed starting installation of $PALETTE_MODULE")
+                        _toastMessage.value =
+                            Event("Failed starting installation of $RANDOM_COLOR_MODULE")
                     }
                 }
             }
         }
     }
+
+    fun invokePalette() {
+        // TODO: 14/05/2020 implement
+        _toastMessage.value = Event("Not implemented yet")
+    }
+
+    fun startConfirmationDialogForResult(
+        state: SplitInstallSessionState,
+        activity: Activity,
+        requestCode: Int
+    ) =
+        manager.startConfirmationDialogForResult(state, activity, requestCode)
 }
 
 sealed class ModuleStatus {
@@ -105,4 +136,5 @@ sealed class ModuleStatus {
     class NeedsConfirmation(val state: SplitInstallSessionState) : ModuleStatus()
 }
 
+const val RANDOM_COLOR_MODULE = "randomcolor"
 const val PALETTE_MODULE = "palette"
