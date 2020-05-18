@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.state
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -31,6 +31,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for InAppUpdates.
+ */
 class UpdateViewModel(val app: Application) : AndroidViewModel(app) {
     private val manager = AppUpdateManagerFactory.create(app)
 
@@ -62,6 +65,7 @@ class UpdateViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     private fun toast(message: String) {
-        toastMessage.value = Event(message)
+        toastMessage.value =
+            Event(message)
     }
 }

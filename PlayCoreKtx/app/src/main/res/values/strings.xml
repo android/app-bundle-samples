@@ -16,7 +16,6 @@
 
 <resources>
     <string name="app_name">Play Core sample</string>
-    <string name="module_feature_palette">Palette</string>
     <string name="start">Start</string>
     <string name="instructions">Press a button to perform an action.</string>
     <string name="error_for_module">Error: %1$i for module %2$s</string>
@@ -30,4 +29,7 @@
     <string name="start_update">Start update</string>
     <string name="downloading_update">Downloading update… %1$i</string>
     <string name="press_to_complete_update">Press here to complete update</string>
+
+    <string name="module_feature_picture">Picture</string>
+    <string name="module_feature_random_color">Random Color</string>
 </resources>

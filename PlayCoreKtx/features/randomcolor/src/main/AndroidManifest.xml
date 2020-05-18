@@ -21,7 +21,7 @@
 
     <dist:module
         dist:onDemand="true"
-        dist:title="@string/module_feature_palette">
+        dist:title="@string/module_feature_random_color">
         <dist:fusing dist:include="true" />
     </dist:module>
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -27,7 +27,12 @@ import androidx.lifecycle.Observer
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.totalBytesToDownload
+import com.google.android.samples.dynamicfeatures.R
 import com.google.android.samples.dynamicfeatures.databinding.FragmentMainBinding
+import com.google.android.samples.dynamicfeatures.state.EventObserver
+import com.google.android.samples.dynamicfeatures.state.InstallViewModel
+import com.google.android.samples.dynamicfeatures.state.ModuleStatus
+import com.google.android.samples.dynamicfeatures.state.UpdateViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainFragment : Fragment(R.layout.fragment_main) {
@@ -95,7 +100,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                             visibility = View.VISIBLE
                             isEnabled = false
                             val updateProgress =
-                                updateResult.installState.bytesDownloaded * 100 / updateResult.installState.totalBytesToDownload
+                                updateResult.installState.bytesDownloaded * 100 /
+                                    updateResult.installState.totalBytesToDownload
                             text = context.getString(R.string.downloading_update, updateProgress)
                         }
                     }

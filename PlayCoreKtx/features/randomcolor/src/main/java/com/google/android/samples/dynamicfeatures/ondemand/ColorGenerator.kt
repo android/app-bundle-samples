@@ -19,12 +19,13 @@ package com.google.android.samples.dynamicfeatures.ondemand
 import android.graphics.Color
 import java.util.Random
 
+/** Generate random colors. */
 class ColorGenerator {
     private val random = Random(System.currentTimeMillis())
 
     val randomColor
         /**
-         * Returns a random color in the range of 0x000000 to 0xffffff.
+         * Returns a random color in ARGB.
          */
         get() = random.color()
 

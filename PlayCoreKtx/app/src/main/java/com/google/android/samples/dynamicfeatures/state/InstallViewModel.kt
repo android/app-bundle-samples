@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.state
 
 import android.app.Activity
 import android.app.Application
@@ -35,6 +35,12 @@ import com.google.android.play.core.splitinstall.SplitInstallException
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import com.google.android.play.core.splitinstall.SplitInstallSessionState
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
+import com.google.android.samples.dynamicfeatures.R.string
+import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Available
+import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Installed
+import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Installing
+import com.google.android.samples.dynamicfeatures.state.ModuleStatus.NeedsConfirmation
+import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Unavailable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
@@ -52,42 +58,50 @@ class InstallViewModel(val app: Application) : AndroidViewModel(app) {
 //    val navigationEvents: LiveData<Event<String>> = _navigationEvents
 
     val moduleStatus: LiveData<ModuleStatus> = manager.requestProgressFlow()
-        .filter { state -> state.moduleNames.contains(RANDOM_COLOR_MODULE) }
+        .filter { state -> state.moduleNames.contains(
+            RANDOM_COLOR_MODULE
+        ) }
         .map { state ->
             Log.d("STATE", state.toString())
             when (state.status) {
-                SplitInstallSessionStatus.CANCELED -> ModuleStatus.Available
-                SplitInstallSessionStatus.CANCELING -> ModuleStatus.Installing(0.0)
-                SplitInstallSessionStatus.DOWNLOADED -> ModuleStatus.Installing(1.0)
-                SplitInstallSessionStatus.DOWNLOADING -> ModuleStatus.Installing(
+                SplitInstallSessionStatus.CANCELED -> Available
+                SplitInstallSessionStatus.CANCELING -> Installing(0.0)
+                SplitInstallSessionStatus.DOWNLOADED -> Installing(1.0)
+                SplitInstallSessionStatus.DOWNLOADING -> Installing(
                     state.bytesDownloaded.toDouble() / state.totalBytesToDownload
                 )
                 SplitInstallSessionStatus.FAILED -> {
-                    _toastMessage.value = Event(
-                        app.getString(
-                            R.string.error_for_module, state.errorCode(),
-                            state.moduleNames()
+                    _toastMessage.value =
+                        Event(
+                            app.getString(
+                                string.error_for_module,
+                                state.errorCode(),
+                                state.moduleNames()
+                            )
                         )
-                    )
-                    ModuleStatus.Available
+                    Available
                 }
-                SplitInstallSessionStatus.INSTALLED -> ModuleStatus.Installed
-                SplitInstallSessionStatus.INSTALLING -> ModuleStatus.Installing(1.0)
-                SplitInstallSessionStatus.PENDING -> ModuleStatus.Installing(0.0)
-                SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> ModuleStatus.NeedsConfirmation(
+                SplitInstallSessionStatus.INSTALLED -> Installed
+                SplitInstallSessionStatus.INSTALLING -> Installing(1.0)
+                SplitInstallSessionStatus.PENDING -> Installing(0.0)
+                SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> NeedsConfirmation(
                     state
                 )
-                SplitInstallSessionStatus.UNKNOWN -> ModuleStatus.Unavailable
-                else -> ModuleStatus.Unavailable
+                SplitInstallSessionStatus.UNKNOWN -> Unavailable
+                else -> Unavailable
             }
         }.catch {
             _toastMessage.value =
-                Event("Something went wrong. No install progress will be reported.")
-            emit(ModuleStatus.Unavailable)
+                Event(
+                    "Something went wrong. No install progress will be reported."
+                )
+            emit(Unavailable)
         }.asLiveData()
 
     fun invokeRandomColor() {
-        if (manager.installedModules.contains(RANDOM_COLOR_MODULE)) {
+        if (manager.installedModules.contains(
+                RANDOM_COLOR_MODULE
+            )) {
             // TODO invoke the Palette UI and do something
             app.startActivity(
                 Intent(
@@ -100,7 +114,7 @@ class InstallViewModel(val app: Application) : AndroidViewModel(app) {
                 })
             _toastMessage.value = Event("Invoked $RANDOM_COLOR_MODULE!")
         } else {
-            if (moduleStatus.value is ModuleStatus.NeedsConfirmation) {
+            if (moduleStatus.value is NeedsConfirmation) {
                 // TODO invoke confirmation UI
             } else {
                 viewModelScope.launch {

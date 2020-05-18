@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.state
 
 import androidx.lifecycle.Observer
 
@@ -23,7 +23,6 @@ import androidx.lifecycle.Observer
 open class Event<out T>(private val content: T) {
 
     private var hasBeenHandled = false
-        private set // Allow external read but not write
 
     /**
      * Returns the content and prevents its use again.

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.ui
 
 import android.os.Bundle
+import com.google.android.samples.dynamicfeatures.R.id
+import com.google.android.samples.dynamicfeatures.R.layout
 
 class MainActivity : BaseSplitActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(layout.activity_main)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().add(R.id.mycontainer, MainFragment()).commit()
+            supportFragmentManager.beginTransaction().add(
+                id.mycontainer,
+                MainFragment()
+            ).commit()
         }
     }
 }

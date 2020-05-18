@@ -28,6 +28,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * Fragment that displays a random color.
+ * Color changes automatically after a defined delay or via click on the screen.
+ */
 class RandomColorFragment : Fragment(R.layout.random_color) {
 
     private val colorGenerator = ColorGenerator()
@@ -57,6 +61,9 @@ class RandomColorFragment : Fragment(R.layout.random_color) {
         }
     }
 
+    /**
+     * Changes the background color after a given [intervalMs].
+     */
     private suspend fun changeBackgroundColor(intervalMs: Long) {
         while (true) {
             delay(intervalMs)

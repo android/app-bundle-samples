@@ -20,10 +20,10 @@ import android.os.Bundle
 import android.widget.FrameLayout.LayoutParams
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
 import androidx.fragment.app.FragmentContainerView
-import com.google.android.samples.dynamicfeatures.BaseSplitActivity
+import com.google.android.samples.dynamicfeatures.ui.BaseSplitActivity
 import com.google.android.samples.playcore.randomcolor.R
 
-/** Activity to hold [RandomColorFragment]. */
+/** Activity holding [RandomColorFragment]. */
 class RandomColorActivity : BaseSplitActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
