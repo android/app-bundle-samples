@@ -16,56 +16,27 @@
 
 package com.google.android.samples.dynamicfeatures.ondemand
 
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview
 import androidx.fragment.app.Fragment
-import androidx.palette.graphics.Palette
-import androidx.palette.graphics.Palette.Swatch
-import com.google.android.samples.playcore.picture.R
-import com.google.android.samples.playcore.picture.databinding.PictureBinding
+import androidx.fragment.app.activityViewModels
 
 /**
- * This fragment enables taking a picture.
+ * This fragment enables taking a picture and feeding it into the [PaletteViewModel].
  */
-class PictureFragment : Fragment(R.layout.picture) {
+class PictureFragment : Fragment() {
 
-    private lateinit var viewBinding: PictureBinding
+    // Using activityViewModels here as Palette is passed into another fragment once it's generated.
+    private val paletteViewModel by activityViewModels<PaletteViewModel>()
 
     private lateinit var getPicturePreview: ActivityResultLauncher<Void>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getPicturePreview = requireActivity().registerForActivityResult(
-            TakePicturePreview(),
-            ::generateSwatches
-        )
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) =
-        PictureBinding.inflate(layoutInflater)
-            .apply {
-                viewBinding = this
-                openCamera.setOnClickListener {
-                    getPicturePreview.launch(null)
-                }
-            }.root
-
-    private fun generateSwatches(bitmap: Bitmap) {
-        applySwatches(Palette.from(bitmap).generate().swatches)
-    }
-
-    private fun applySwatches(swatches: List<Swatch>) {
-        Log.d("PictureFragment", "swatches: $swatches")
-
-        // TODO Update UI with colored buttons depending on image's vibrant and muted colors
+        getPicturePreview = requireActivity().registerForActivityResult(TakePicturePreview()) {
+            paletteViewModel.requestPalette(it)
+        }
+        getPicturePreview.launch(null)
     }
 }

@@ -19,12 +19,16 @@ package com.google.android.samples.dynamicfeatures.ondemand
 import android.os.Bundle
 import android.widget.FrameLayout.LayoutParams
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+import androidx.activity.viewModels
 import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.observe
 import com.google.android.samples.dynamicfeatures.ui.BaseSplitActivity
 import com.google.android.samples.playcore.picture.R
 
 /** Activity holding [PictureFragment]. */
 class PictureActivity : BaseSplitActivity() {
+
+    private val viewModel by viewModels<PaletteViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +36,31 @@ class PictureActivity : BaseSplitActivity() {
             id = R.id.fragmentContainer
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         })
+        displayPictureFragment()
+        viewModel.swatches.observe(this) {
+            if (it.isNotEmpty()) {
+                displayPaletteFragment()
+            } else {
+                displayPictureFragment()
+            }
+        }
+    }
 
+    private fun displayPictureFragment() {
         with(supportFragmentManager) {
             if (findFragmentById(R.id.fragment) == null) {
                 beginTransaction()
                     .add(R.id.fragmentContainer, PictureFragment())
+                    .commit()
+            }
+        }
+    }
+
+    private fun displayPaletteFragment() {
+        with(supportFragmentManager) {
+            if (findFragmentById(R.id.fragment) == null) {
+                beginTransaction()
+                    .replace(R.id.fragmentContainer, PaletteFragment())
                     .commit()
             }
         }

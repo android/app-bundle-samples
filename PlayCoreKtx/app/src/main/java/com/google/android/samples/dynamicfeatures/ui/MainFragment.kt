@@ -33,8 +33,8 @@ import com.google.android.play.core.ktx.AppUpdateResult.NotAvailable
 import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.totalBytesToDownload
 import com.google.android.samples.dynamicfeatures.R
-import com.google.android.samples.dynamicfeatures.R.string
 import com.google.android.samples.dynamicfeatures.databinding.FragmentMainBinding
+import com.google.android.samples.dynamicfeatures.state.ColorSource
 import com.google.android.samples.dynamicfeatures.state.EventObserver
 import com.google.android.samples.dynamicfeatures.state.InstallViewModel
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus
@@ -111,7 +111,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 with(bindings.btnUpdate) {
                     visibility = View.VISIBLE
                     isEnabled = true
-                    text = context.getString(string.start_update)
+                    text = context.getString(R.string.start_update)
                 }
             }
             is InProgress -> {
@@ -121,16 +121,24 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     val updateProgress =
                         updateResult.installState.bytesDownloaded * 100 /
                             updateResult.installState.totalBytesToDownload
-                    text = context.getString(string.downloading_update, updateProgress)
+                    text = context.getString(R.string.downloading_update, updateProgress)
                 }
             }
             is Downloaded -> {
                 with(bindings.btnUpdate) {
                     visibility = View.VISIBLE
                     isEnabled = true
-                    text = context.getString(string.press_to_complete_update)
+                    text = context.getString(R.string.press_to_complete_update)
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        with(ColorSource) {
+            view?.setBackgroundColor(backgroundColor)
+            bindings.instructions.setTextColor(textColor)
         }
     }
 

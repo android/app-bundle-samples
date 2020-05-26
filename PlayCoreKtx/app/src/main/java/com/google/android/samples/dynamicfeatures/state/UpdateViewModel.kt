@@ -34,8 +34,8 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for InAppUpdates.
  */
-class UpdateViewModel(val app: Application) : AndroidViewModel(app) {
-    private val manager = AppUpdateManagerFactory.create(app)
+class UpdateViewModel(app: Application) : AndroidViewModel(app) {
+    private val manager = AppUpdateManagerFactory.create(getApplication())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val updateStatus = manager.requestUpdateFlow().catch {

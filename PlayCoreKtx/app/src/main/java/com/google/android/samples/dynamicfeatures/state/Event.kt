@@ -49,3 +49,5 @@ class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Obser
         }
     }
 }
+
+data class InstallError(val errorCode: Int, val moduleNames: String)

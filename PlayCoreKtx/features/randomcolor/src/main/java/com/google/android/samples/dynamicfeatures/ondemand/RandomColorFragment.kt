@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.samples.playcore.randomcolor.R
 import com.google.android.samples.playcore.randomcolor.databinding.RandomColorBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

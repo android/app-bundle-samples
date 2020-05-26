@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2020 The Android Open Source Project
   ~
@@ -14,8 +15,10 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string name="content_text">These are just some random colors.</string>
-    <string name="open_camera">Open camera to select image</string>
-    <string name="choose_color_title">Choose a color for your flashlight</string>
-</resources>
+<com.google.android.material.button.MaterialButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/padding_item"
+    android:layout_marginEnd="@dimen/padding_item"
+    android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />

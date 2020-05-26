@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.dynamic-feature'
-apply plugin: 'kotlin-android'
+package com.google.android.samples.dynamicfeatures.state
 
-android {
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
-    compileSdkVersion versions.compileSdk
+/**
+ * Stores colors in memory for the app's runtime.
+ */
+object ColorSource {
 
-    defaultConfig {
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    var backgroundColor = 0
+    set(value) {
+        _colorConsumed.value = Event(false)
+        field = value
     }
 
-    buildFeatures {
-        viewBinding = true
-    }
-}
+    var textColor = 0
 
-dependencies {
-    implementation project(':app')
+    private val _colorConsumed = MutableLiveData<Event<Boolean>>().apply { value = Event(true) }
+    val colorConsumed: LiveData<Event<Boolean>> = _colorConsumed
 }
