@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.ui
 
-import com.google.android.play.core.splitcompat.SplitCompatApplication
+import android.os.Bundle
+import com.google.android.samples.dynamicfeatures.R.id
+import com.google.android.samples.dynamicfeatures.R.layout
 
-class MyApplication : SplitCompatApplication()
+class MainActivity : BaseSplitActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(layout.activity_main)
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().add(
+                id.mycontainer,
+                MainFragment()
+            ).commit()
+        }
+    }
+}

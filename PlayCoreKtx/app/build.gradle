@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Android Open Source Project.
+ * Copyright 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    viewBinding.enabled = true
+    buildFeatures {
+        viewBinding = true
+    }
 
     buildTypes {
         debug {}
@@ -53,7 +55,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    dynamicFeatures = [':features:palette']
+    dynamicFeatures = [':features:randomcolor']
 
     kotlinOptions {
         freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"

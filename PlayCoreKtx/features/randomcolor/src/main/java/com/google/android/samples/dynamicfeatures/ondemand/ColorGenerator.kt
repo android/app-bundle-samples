@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-package com.google.android.samples.dynamicfeatures
+package com.google.android.samples.dynamicfeatures.ondemand
 
-import com.google.android.play.core.splitcompat.SplitCompatApplication
+import android.graphics.Color
+import java.util.Random
 
-class MyApplication : SplitCompatApplication()
+/** Generate random colors. */
+class ColorGenerator {
+    private val random = Random(System.currentTimeMillis())
+
+    val randomColor
+        /**
+         * Returns a random color in ARGB.
+         */
+        get() = random.color()
+
+    private fun Random.color() = Color.argb(colorBit(), colorBit(), colorBit(), colorBit())
+    private fun Random.colorBit() = nextInt(255)
+}

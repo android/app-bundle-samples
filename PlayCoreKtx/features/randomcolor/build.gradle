@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-package com.google.android.samples.dynamicfeatures
+apply plugin: 'com.android.dynamic-feature'
+apply plugin: 'kotlin-android'
 
-import com.google.android.play.core.splitcompat.SplitCompatApplication
+android {
 
-class MyApplication : SplitCompatApplication()
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    viewBinding.enabled = true
+
+}
+
+dependencies {
+    implementation project(':app')
+}
