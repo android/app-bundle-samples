@@ -32,4 +32,7 @@
 
     <string name="module_feature_picture">Picture</string>
     <string name="module_feature_random_color">Random Color</string>
+
+    <string name="choose_color_title">Choose a color for your flashlight</string>
+
 </resources>

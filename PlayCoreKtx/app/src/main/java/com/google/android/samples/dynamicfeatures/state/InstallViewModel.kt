@@ -145,16 +145,9 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
     private fun requestModuleInstallation(moduleName: String) {
         viewModelScope.launch {
             try {
-                manager.requestInstall(
-                    modules = listOf(
-                        moduleName
-                    )
-                )
+                manager.requestInstall(listOf(moduleName))
             } catch (e: SplitInstallException) {
-                _toastMessage.value =
-                    Event(
-                        "Failed starting installation of $moduleName"
-                    )
+                _toastMessage.value = Event("Failed starting installation of $moduleName")
             }
         }
     }

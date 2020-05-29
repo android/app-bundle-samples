@@ -17,5 +17,4 @@
 <resources>
     <string name="content_text">These are just some random colors.</string>
     <string name="open_camera">Open camera to select image</string>
-    <string name="choose_color_title">Choose a color for your flashlight</string>
 </resources>

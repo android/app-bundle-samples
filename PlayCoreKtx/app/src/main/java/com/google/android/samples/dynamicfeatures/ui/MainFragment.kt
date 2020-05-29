@@ -20,7 +20,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -75,31 +74,33 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         updateViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
     }
 
-    private fun updateModuleButton(target: Button, status: ModuleStatus) {
+    private fun updateModuleButton(target: View, status: ModuleStatus) {
         target.isEnabled = status !is ModuleStatus.Unavailable
-        when (status) {
-            ModuleStatus.Available -> {
-                target.text = getString(R.string.install)
-            }
-            is ModuleStatus.Installing -> {
-                target.text = getString(
-                    R.string.installing,
-                    (status.progress * 100).toInt()
-                )
-            }
-            ModuleStatus.Unavailable -> {
-                target.isEnabled = false
-                target.text = getString(R.string.feature_not_available)
-            }
-            ModuleStatus.Installed -> {
-                target.text = getString(R.string.start)
-            }
-            is ModuleStatus.NeedsConfirmation -> {
-                installViewModel.startConfirmationDialogForResult(
-                    status.state,
-                    requireActivity(),
-                    INSTALL_CONFIRMATION_REQ_CODE
-                )
+        with(bindings.moduleState) {
+            when (status) {
+                ModuleStatus.Available -> {
+                    text = getString(R.string.install)
+                }
+                is ModuleStatus.Installing -> {
+                    text = getString(
+                        R.string.installing,
+                        (status.progress * 100).toInt()
+                    )
+                }
+                ModuleStatus.Unavailable -> {
+                    target.isEnabled = false
+                    text = getString(R.string.feature_not_available)
+                }
+                ModuleStatus.Installed -> {
+                    text = getString(R.string.start)
+                }
+                is ModuleStatus.NeedsConfirmation -> {
+                    installViewModel.startConfirmationDialogForResult(
+                        status.state,
+                        requireActivity(),
+                        INSTALL_CONFIRMATION_REQ_CODE
+                    )
+                }
             }
         }
     }
