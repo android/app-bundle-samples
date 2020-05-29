@@ -16,5 +16,7 @@
   -->
 
 <resources>
+    <dimen name="padding_item">8dp</dimen>
     <dimen name="margin_fab">16dp</dimen>
+    <dimen name="padding_title">16dp</dimen>
 </resources>

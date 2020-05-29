@@ -16,14 +16,19 @@
 
 package com.google.android.samples.dynamicfeatures.ondemand
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.samples.dynamicfeatures.state.ColorSource
 import com.google.android.samples.playcore.randomcolor.R
 import com.google.android.samples.playcore.randomcolor.databinding.RandomColorBinding
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -35,6 +40,17 @@ class RandomColorFragment : Fragment(R.layout.random_color) {
 
     private val colorGenerator = ColorGenerator()
     private lateinit var viewBinding: RandomColorBinding
+    private var changeInterval = 2000L
+
+    private val onSeekBarChangeListener = object : OnSeekBarChangeListener {
+        override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+            changeInterval = p1.toLong()
+        }
+
+        override fun onStartTrackingTouch(p0: SeekBar?) = Unit
+
+        override fun onStopTrackingTouch(p0: SeekBar?) = Unit
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,34 +66,38 @@ class RandomColorFragment : Fragment(R.layout.random_color) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewBinding.apply {
-            content.setOnClickListener {
-                randomContentBackground()
+            with(content) {
+                setOnClickListener {
+                    randomContentBackground()
+                }
+                setBackgroundColor(ColorSource.backgroundColor)
             }
-
+            with(interval) {
+                progress = changeInterval.toInt()
+                setOnSeekBarChangeListener(onSeekBarChangeListener)
+            }
             lifecycleScope.launch {
-                changeBackgroundColor(CHANGE_INTERVAL)
+                changeBackgroundColor()
             }
         }
     }
 
     /**
-     * Changes the background color after a given [intervalMs].
+     * Changes the background color after a given [changeInterval].
      */
-    private suspend fun changeBackgroundColor(intervalMs: Long) {
+    private suspend fun changeBackgroundColor() {
         while (true) {
-            delay(intervalMs)
+            delay(changeInterval)
             randomContentBackground()
         }
     }
 
     private fun randomContentBackground() {
         with(viewBinding) {
-            val randomColor = colorGenerator.randomColor
-            content.setBackgroundColor(randomColor)
+            with(ColorSource) {
+                backgroundColor = colorGenerator.randomColor
+                content.setBackgroundColor(backgroundColor)
+            }
         }
-    }
-
-    companion object {
-        const val CHANGE_INTERVAL = 2000L
     }
 }

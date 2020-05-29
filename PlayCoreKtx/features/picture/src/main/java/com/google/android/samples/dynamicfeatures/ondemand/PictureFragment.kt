@@ -34,8 +34,12 @@ class PictureFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getPicturePreview = requireActivity().registerForActivityResult(TakePicturePreview()) {
-            paletteViewModel.requestPalette(it)
+        getPicturePreview = requireActivity().registerForActivityResult(TakePicturePreview()) { it ->
+            if (it == null) {
+                requireActivity().finish()
+            } else {
+                paletteViewModel.requestPalette(it)
+            }
         }
         getPicturePreview.launch(null)
     }
