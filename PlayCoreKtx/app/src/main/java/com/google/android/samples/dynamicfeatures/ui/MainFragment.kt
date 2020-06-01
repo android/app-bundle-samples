@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.AppUpdateResult.Available
 import com.google.android.play.core.ktx.AppUpdateResult.Downloaded
@@ -31,20 +32,31 @@ import com.google.android.play.core.ktx.AppUpdateResult.InProgress
 import com.google.android.play.core.ktx.AppUpdateResult.NotAvailable
 import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.totalBytesToDownload
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import com.google.android.samples.dynamicfeatures.R
 import com.google.android.samples.dynamicfeatures.databinding.FragmentMainBinding
 import com.google.android.samples.dynamicfeatures.state.ColorSource
 import com.google.android.samples.dynamicfeatures.state.EventObserver
+import com.google.android.samples.dynamicfeatures.state.INSTALL_CONFIRMATION_REQ_CODE
+import com.google.android.samples.dynamicfeatures.state.InstallError
 import com.google.android.samples.dynamicfeatures.state.InstallViewModel
+import com.google.android.samples.dynamicfeatures.state.InstallViewModelProviderFactory
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus
+import com.google.android.samples.dynamicfeatures.state.UPDATE_CONFIRMATION_REQ_CODE
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModel
+import com.google.android.samples.dynamicfeatures.state.UpdateViewModelProviderFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val installViewModel by viewModels<InstallViewModel>()
-    private val updateViewModel by viewModels<UpdateViewModel>()
+    private val installViewModel by viewModels<InstallViewModel> {
+        InstallViewModelProviderFactory(SplitInstallManagerFactory.create(requireContext()))
+    }
+
+    private val updateViewModel by viewModels<UpdateViewModel> {
+        UpdateViewModelProviderFactory(AppUpdateManagerFactory.create(requireContext()))
+    }
     private lateinit var bindings: FragmentMainBinding
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -53,25 +65,53 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         with(bindings) {
             btnInvokeRandom.setOnClickListener { installViewModel.invokeRandomColor() }
             btnInvokePalette.setOnClickListener { installViewModel.invokePictureSelection() }
-            btnUpdate.setOnClickListener { updateViewModel.invokeUpdate() }
+            btnUpdate.setOnClickListener {
+                updateViewModel.invokeUpdate(this@MainFragment)
+            }
         }
 
-        installViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
+        addInstallViewModelObservers()
+        addUpdateViewModelObservers()
+    }
 
-        installViewModel.pictureModuleStatus.observe(viewLifecycleOwner, Observer { status ->
-            updateModuleButton(bindings.btnInvokePalette, status)
-        })
+    private fun addInstallViewModelObservers() {
+        with(installViewModel) {
+            toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
+            errorMessage.observe(
+                viewLifecycleOwner, EventObserver(::processInstallError)
+            )
 
-        installViewModel.randomColorModuleStatus.observe(viewLifecycleOwner, Observer { status ->
-            updateModuleButton(bindings.btnInvokePalette, status)
-        })
-
-        updateViewModel.updateStatus.observe(
-            viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
-                updateUpdateButton(updateResult)
+            pictureModuleStatus.observe(viewLifecycleOwner, Observer { status ->
+                updateModuleButton(bindings.btnInvokePalette, status)
             })
 
-        updateViewModel.toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
+            randomColorModuleStatus.observe(viewLifecycleOwner, Observer { status ->
+                updateModuleButton(bindings.btnInvokePalette, status)
+            })
+
+            userConfirmationRequired.observe(viewLifecycleOwner, Observer { status ->
+                status.getContentIfNotHandled()?.let {
+                    startConfirmationDialogForResult(it.state, requireActivity())
+                }
+            })
+
+            activityIntent.observe(viewLifecycleOwner, Observer { status ->
+                status.getContentIfNotHandled()?.let {
+                    startActivity(it)
+                }
+            })
+        }
+    }
+
+    private fun addUpdateViewModelObservers() {
+        with(updateViewModel) {
+            updateStatus.observe(
+                viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
+                    updateUpdateButton(updateResult)
+                })
+
+            toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
+        }
     }
 
     private fun updateModuleButton(target: View, status: ModuleStatus) {
@@ -97,8 +137,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 is ModuleStatus.NeedsConfirmation -> {
                     installViewModel.startConfirmationDialogForResult(
                         status.state,
-                        requireActivity(),
-                        INSTALL_CONFIRMATION_REQ_CODE
+                        requireActivity()
                     )
                 }
             }
@@ -154,6 +193,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             if (resultCode == Activity.RESULT_CANCELED) {
 //                toastAndLog(getString(R.string.user_cancelled))
             }
+        } else if (requestCode == UPDATE_CONFIRMATION_REQ_CODE) {
+            // TODO Handle flexible updates by updating the UI
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
@@ -165,6 +206,10 @@ fun MainFragment.toastAndLog(text: String) {
     Log.d(TAG, text)
 }
 
-private const val INSTALL_CONFIRMATION_REQ_CODE = 1
-private const val UPDATE_CONFIRMATION_REQ_CODE = 2
+fun MainFragment.processInstallError(installError: InstallError) {
+    toastAndLog(
+        getString(R.string.error_for_module, installError.errorCode, installError.moduleNames)
+    )
+}
+
 private const val TAG = "DynamicFeatures"

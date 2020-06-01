@@ -15,12 +15,14 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.clientVersionStalenessDays
 import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
@@ -34,38 +36,57 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for InAppUpdates.
  */
-class UpdateViewModel(app: Application) : AndroidViewModel(app) {
-    private val manager = AppUpdateManagerFactory.create(getApplication())
+class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
+
+    private val _immediateUpdate = MutableLiveData<Event<Boolean>>()
+    val immediateUpdate: LiveData<Event<Boolean>> = _immediateUpdate
+
+    private val _flexibleUpdate = MutableLiveData<Event<Boolean>>()
+    val flexibleUpdate: LiveData<Event<Boolean>> = _flexibleUpdate
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val updateStatus = manager.requestUpdateFlow().catch {
         toast("Update info not available")
     }.asLiveData()
 
-    val toastMessage = MutableLiveData<Event<String>>()
+    private val _toastMessage = MutableLiveData<Event<String>>()
+    val toastMessage: LiveData<Event<String>> = _toastMessage
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun invokeUpdate() {
+    fun invokeUpdate(fragment: Fragment, requestCode: Int = UPDATE_CONFIRMATION_REQ_CODE) {
         when (val updateResult = updateStatus.value) {
             AppUpdateResult.NotAvailable -> toast("No update available")
             is AppUpdateResult.Available -> {
                 with(updateResult.updateInfo) {
                     if ((clientVersionStalenessDays ?: 0) > 7 && isImmediateUpdateAllowed) {
-                        // TODO updateResult.startImmediateUpdate()
+                        updateResult.startImmediateUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
                     } else if (updatePriority > 4 && isImmediateUpdateAllowed) {
-                        // TODO updateResult.startImmediateUpdate()
+                        updateResult.startImmediateUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
                     } else if (isFlexibleUpdateAllowed) {
-                        // TODO updateResult.startFlexibleUpdate()
+                        updateResult.startFlexibleUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
+                    } else {
+                        throw IllegalStateException("This state is not legal.")
                     }
                 }
             }
             is AppUpdateResult.InProgress -> toast("Update already in progress")
-            is AppUpdateResult.Downloaded -> viewModelScope.launch { updateResult.completeUpdate() }
+            is AppUpdateResult.Downloaded -> viewModelScope.launch {
+                updateResult.completeUpdate()
+            }
         }
     }
 
     private fun toast(message: String) {
-        toastMessage.value =
-            Event(message)
+        _toastMessage.value = Event(message)
+    }
+}
+
+const val UPDATE_CONFIRMATION_REQ_CODE = 2
+
+class UpdateViewModelProviderFactory(
+    private val manager: AppUpdateManager
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return modelClass.getConstructor(AppUpdateManager::class.java).newInstance(manager)
     }
 }

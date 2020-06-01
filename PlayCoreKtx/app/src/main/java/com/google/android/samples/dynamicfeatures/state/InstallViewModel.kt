@@ -55,6 +55,9 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
     private val _errorMessage = MutableLiveData<Event<InstallError>>()
     val errorMessage: LiveData<Event<InstallError>> = _errorMessage
 
+    private val _userConfirmationRequired = MutableLiveData<Event<NeedsConfirmation>>()
+    val userConfirmationRequired = _userConfirmationRequired
+
     private val _activityIntent = MutableLiveData<Event<Intent>>()
     val activityIntent: LiveData<Event<Intent>> = _activityIntent
 
@@ -125,16 +128,18 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
                     )
                     flags = FLAG_ACTIVITY_NEW_TASK
                 })
-            _toastMessage.value = Event("Invoked $moduleName")
         } else {
-            if (when (moduleName) {
-                    RANDOM_COLOR_MODULE -> randomColorModuleStatus.value
-                    PICTURE_MODULE -> pictureModuleStatus.value
-                    else -> throw IllegalArgumentException("State not implemented")
-                } is NeedsConfirmation
-            ) {
-                _toastMessage.value = Event("Confirmation required (Not Implemented)")
-                TODO("Invoke confirmation UI")
+            val status = when (moduleName) {
+                RANDOM_COLOR_MODULE -> randomColorModuleStatus.value
+                PICTURE_MODULE -> pictureModuleStatus.value
+                else -> throw IllegalArgumentException("State not implemented")
+            }
+            if (status is NeedsConfirmation) {
+                if (!_userConfirmationRequired.hasActiveObservers())
+                    _toastMessage.value = Event(
+                        "Make sure to register an observer for user confirmation!"
+                    )
+                _userConfirmationRequired.value = Event(status)
             } else {
                 requestModuleInstallation(moduleName)
             }
@@ -155,9 +160,8 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
     fun startConfirmationDialogForResult(
         state: SplitInstallSessionState,
         activity: Activity,
-        requestCode: Int
-    ) =
-        manager.startConfirmationDialogForResult(state, activity, requestCode)
+        requestCode: Int = INSTALL_CONFIRMATION_REQ_CODE
+    ) = manager.startConfirmationDialogForResult(state, activity, requestCode)
 }
 
 sealed class ModuleStatus {
@@ -178,3 +182,4 @@ class InstallViewModelProviderFactory(
 
 const val RANDOM_COLOR_MODULE = "randomcolor"
 const val PICTURE_MODULE = "picture"
+const val INSTALL_CONFIRMATION_REQ_CODE = 1

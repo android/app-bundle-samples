@@ -16,7 +16,6 @@
 
 package com.google.android.samples.dynamicfeatures.ondemand
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +27,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.samples.dynamicfeatures.state.ColorSource
 import com.google.android.samples.playcore.randomcolor.R
 import com.google.android.samples.playcore.randomcolor.databinding.RandomColorBinding
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -38,7 +36,6 @@ import kotlinx.coroutines.launch
  */
 class RandomColorFragment : Fragment(R.layout.random_color) {
 
-    private val colorGenerator = ColorGenerator()
     private lateinit var viewBinding: RandomColorBinding
     private var changeInterval = 2000L
 
@@ -95,7 +92,7 @@ class RandomColorFragment : Fragment(R.layout.random_color) {
     private fun randomContentBackground() {
         with(viewBinding) {
             with(ColorSource) {
-                backgroundColor = colorGenerator.randomColor
+                backgroundColor = ColorGenerator.randomColor
                 content.setBackgroundColor(backgroundColor)
             }
         }

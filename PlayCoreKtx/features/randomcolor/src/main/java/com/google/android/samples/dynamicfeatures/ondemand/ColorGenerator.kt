@@ -20,7 +20,7 @@ import android.graphics.Color
 import java.util.Random
 
 /** Generate random colors. */
-class ColorGenerator {
+object ColorGenerator {
     private val random = Random(System.currentTimeMillis())
 
     val randomColor
