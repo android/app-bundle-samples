@@ -16,9 +16,8 @@
 
 package com.google.android.samples.dynamicnavigator.feature
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 
 /** A basic [AppCompatActivity] subclass inside a dynamic feature module. */
 class FeatureActivity : AppCompatActivity() {

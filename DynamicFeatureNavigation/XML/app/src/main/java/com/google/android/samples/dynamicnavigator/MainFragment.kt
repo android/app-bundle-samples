@@ -20,13 +20,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.dynamicfeatures.DynamicExtras
-import androidx.navigation.dynamicfeatures.DynamicInstallMonitor
 import androidx.navigation.fragment.findNavController
-import com.google.android.play.core.splitinstall.SplitInstallSessionState
-import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 
 /** The primary fragment displaying navigation monitoring options. */
 class MainFragment : Fragment(R.layout.fragment_main) {
@@ -43,6 +37,5 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 navController.navigate(destinationId)
             }
         }
-
     }
 }

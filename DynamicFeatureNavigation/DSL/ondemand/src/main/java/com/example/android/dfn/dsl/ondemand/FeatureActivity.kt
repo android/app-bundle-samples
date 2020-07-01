@@ -18,4 +18,4 @@ package com.example.android.dfn.dsl.ondemand
 
 import androidx.fragment.app.FragmentActivity
 
-class FeatureActivity: FragmentActivity(R.layout.feature_activity)
+class FeatureActivity : FragmentActivity(R.layout.feature_activity)

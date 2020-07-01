@@ -18,10 +18,10 @@ package com.instantappsample.storage
 import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor.AutoCloseInputStream
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.instantapps.InstantApps
 import java.util.zip.ZipInputStream
 
@@ -39,8 +39,12 @@ class StorageApiActivity : AppCompatActivity() {
         setContentView(R.layout.activity_hello)
         @Suppress("UsePropertyAccessSyntax")
         findViewById<TextView>(R.id.context_view)
-                .setText(getString(R.string.context_pretext,
-                        getString(R.string.app_context)))
+            .setText(
+                getString(
+                    R.string.context_pretext,
+                    getString(R.string.app_context)
+                )
+            )
         migrateDataFromInstantApp()
     }
 
@@ -53,18 +57,20 @@ class StorageApiActivity : AppCompatActivity() {
             // Only runs in an Installed App.
             if (!InstantApps.getPackageManagerCompat(this).isInstantApp) {
                 InstantApps.getInstantAppsClient(this).instantAppData
-                        .addOnSuccessListener { dataZip ->
-                            val data = ZipInputStream(AutoCloseInputStream(dataZip))
-                            readStoredData(data)
-                        }
-                        .addOnFailureListener {
-                            Log.e(TAG, "Something broke ${it.message}")
-                            TODO("Don't just log this in a production app.")
-                        }
+                    .addOnSuccessListener { dataZip ->
+                        val data = ZipInputStream(AutoCloseInputStream(dataZip))
+                        readStoredData(data)
+                    }
+                    .addOnFailureListener {
+                        Log.e(TAG, "Something broke ${it.message}")
+                        TODO("Don't just log this in a production app.")
+                    }
             }
         } else {
-            Toast.makeText(this, "This API is not intended to be used on Android O and above.",
-                    Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this, "This API is not intended to be used on Android O and above.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -72,8 +78,10 @@ class StorageApiActivity : AppCompatActivity() {
      * Implement this method to retrieve the data stored within the Instant App.
      */
     private fun readStoredData(data: ZipInputStream) {
-        Toast.makeText(this, "Stored data can be read. See source code for more info.",
-                Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            this, "Stored data can be read. See source code for more info.",
+            Toast.LENGTH_LONG
+        ).show()
         /*
         TODO("Read the stored data, if necessary parse them " +
                 "and store the results in the installed app.")

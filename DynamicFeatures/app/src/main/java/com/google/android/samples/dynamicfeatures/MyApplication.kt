@@ -56,7 +56,7 @@ object LanguageHelper {
             prefs.edit().putString(PREFS_LANG, value).apply()
         }
 
-    fun init(ctx: Context){
+    fun init(ctx: Context) {
         prefs = ctx.getSharedPreferences(PREFS_LANG, Context.MODE_PRIVATE)
     }
 
@@ -81,5 +81,4 @@ object LanguageHelper {
         conf.setLocale(Locale.forLanguageTag(language))
         return conf
     }
-
 }

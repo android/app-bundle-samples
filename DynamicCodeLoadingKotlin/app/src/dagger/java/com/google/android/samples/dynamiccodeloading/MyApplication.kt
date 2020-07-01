@@ -16,7 +16,6 @@
  */
 package com.google.android.samples.dynamiccodeloading
 
-import androidx.annotation.MainThread
 import com.google.android.play.core.splitcompat.SplitCompatApplication
 import com.google.android.samples.dynamiccodeloading.di.BaseComponent
 import com.google.android.samples.dynamiccodeloading.di.DaggerBaseComponent

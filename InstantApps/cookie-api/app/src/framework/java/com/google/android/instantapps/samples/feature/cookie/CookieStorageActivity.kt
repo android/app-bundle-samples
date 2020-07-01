@@ -17,10 +17,10 @@
 package com.google.android.instantapps.samples.feature.cookie
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import java.nio.charset.Charset
 
 /**
@@ -88,9 +88,9 @@ class CookieStorageActivity : AppCompatActivity() {
                 // Store the new cookie.
                 updateInstantAppCookie(cookieContent)
                 return@with "Stored:" +
-                        "\n${cookieContent.toString(Charset.defaultCharset())}" +
-                        "\nStored / Max size: " +
-                        "${cookieContent.size} / $instantAppCookieMaxBytes"
+                    "\n${cookieContent.toString(Charset.defaultCharset())}" +
+                    "\nStored / Max size: " +
+                    "${cookieContent.size} / $instantAppCookieMaxBytes"
             }
             return@with "Tried to store too much information."
         }

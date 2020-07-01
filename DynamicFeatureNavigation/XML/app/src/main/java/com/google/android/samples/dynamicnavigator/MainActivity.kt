@@ -16,8 +16,8 @@
 
 package com.google.android.samples.dynamicnavigator
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 /** Main Activity for this sample. */
 class MainActivity : AppCompatActivity() {

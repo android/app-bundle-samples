@@ -28,11 +28,11 @@ github:       android/app-bundle-samples
 level:        INTERMEDIATE
 
 apiRefs:
-    - google:com.google.android.play.core.splitinstall.SplitInstallManager
-    - google:com.google.android.play.core.splitinstall.SplitInstallManagerFactory
-    - google:com.google.android.play.core.splitinstall.SplitInstallRequest
-    - google:com.google.android.play.core.splitinstall.SplitInstallSessionState
-    - google:com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
-    - google:com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
+  - google:com.google.android.play.core.splitinstall.SplitInstallManager
+  - google:com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+  - google:com.google.android.play.core.splitinstall.SplitInstallRequest
+  - google:com.google.android.play.core.splitinstall.SplitInstallSessionState
+  - google:com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
+  - google:com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 
 license: apache2

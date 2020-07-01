@@ -27,24 +27,27 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class) class StorageApiActivityTest {
+@RunWith(AndroidJUnit4::class)
+class StorageApiActivityTest {
 
     @JvmField
     @Rule val testRule = object : ActivityTestRule<StorageApiActivity>(
-            StorageApiActivity::class.java,
-            true) {
+        StorageApiActivity::class.java,
+        true
+    ) {
         override fun getActivityIntent(): Intent {
             return Intent()
-                    .addCategory(Intent.CATEGORY_BROWSABLE)
-                    .setAction(Intent.ACTION_VIEW)
-                    .setData(Uri.parse("https://storage-api.instantappsample.com/"))
+                .addCategory(Intent.CATEGORY_BROWSABLE)
+                .setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse("https://storage-api.instantappsample.com/"))
         }
-    };
+    }
 
     /**
      * Tests whether the Activity can be launched via its registered URL.
      */
-    @Test fun isAddressableViaUrl() {
+    @Test
+    fun isAddressableViaUrl() {
         onView(withText(R.string.usage)).check(matches(isDisplayed()))
     }
 }

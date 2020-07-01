@@ -76,8 +76,8 @@ abstract class AbstractMainViewModel(app: Application) : AndroidViewModel(app) {
         _counter.value = (_counter.value ?: 0) + 1
     }
 
-    fun loadCounter(){
-        if (isStorageInstalled()){
+    fun loadCounter() {
+        if (isStorageInstalled()) {
             initializeStorageFeature()
         }
         _counter.value = storageModule?.loadCounter() ?: 0
@@ -118,5 +118,4 @@ abstract class AbstractMainViewModel(app: Application) : AndroidViewModel(app) {
                 Toast.makeText(getApplication(), "Error requesting module install", Toast.LENGTH_SHORT).show()
             }
     }
-
 }

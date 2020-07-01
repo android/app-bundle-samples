@@ -29,14 +29,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-
 @LargeTest
 class MainActivityTest {
 
     @Rule
     @JvmField
     var mActivityTestRule = ActivityTestRule(MainActivity::class.java, false, false)
-
 
     /**
      * Clear sharedpreferences before each run

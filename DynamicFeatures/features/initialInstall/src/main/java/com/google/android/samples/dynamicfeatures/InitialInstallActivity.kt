@@ -19,7 +19,6 @@ package com.google.android.samples.dynamicfeatures
 import android.os.Bundle
 import com.google.android.samples.dynamicfeatures.initialinstall.R
 
-
 /** This is a simple Activity. */
 class InitialInstallActivity : BaseSplitActivity() {
 

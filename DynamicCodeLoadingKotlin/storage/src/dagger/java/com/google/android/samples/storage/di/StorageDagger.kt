@@ -34,7 +34,6 @@ interface StorageComponent {
     fun storageFeature(): StorageFeature
 }
 
-
 /**
  * You can have your own modules, providers etc. in this component to build your object graph.
  * You have access to objects provided by the StorageFeature.Dependencies interface from the base component.
