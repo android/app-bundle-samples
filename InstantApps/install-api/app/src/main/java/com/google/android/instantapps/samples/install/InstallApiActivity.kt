@@ -18,8 +18,8 @@ package com.google.android.instantapps.samples.install
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.instantapps.InstantApps
 
 /**
@@ -32,12 +32,12 @@ class InstallApiActivity : AppCompatActivity() {
     /**
      * Intent to launch after the app has been installed.
      */
-    private val postInstallIntent = Intent(Intent.ACTION_VIEW,
-            Uri.parse("https://install-api.instantappsample.com/")).
-            addCategory(Intent.CATEGORY_BROWSABLE).
-            putExtras(Bundle().apply {
-                putString("The key to", "sending data via intent")
-            })
+    private val postInstallIntent = Intent(
+        Intent.ACTION_VIEW,
+        Uri.parse("https://install-api.instantappsample.com/")
+    ).addCategory(Intent.CATEGORY_BROWSABLE).putExtras(Bundle().apply {
+        putString("The key to", "sending data via intent")
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +48,12 @@ class InstallApiActivity : AppCompatActivity() {
             // Show the installation prompt only for an instant app.
             if (isInstantApp) {
                 setOnClickListener {
-                    InstantApps.showInstallPrompt(this@InstallApiActivity,
-                            postInstallIntent,
-                            REQUEST_CODE,
-                            REFERRER)
+                    InstantApps.showInstallPrompt(
+                        this@InstallApiActivity,
+                        postInstallIntent,
+                        REQUEST_CODE,
+                        REFERRER
+                    )
                 }
             }
         }

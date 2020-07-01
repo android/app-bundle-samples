@@ -19,7 +19,6 @@ package com.google.android.samples.dynamiccodeloading
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import java.util.*
 
 /**
  * An implementation of our ViewModel that uses ServiceLoader.
@@ -51,7 +50,7 @@ import java.util.*
  * with all registered classes.
  */
 class MainViewModel(app: Application) : AbstractMainViewModel(app) {
-    override fun initializeStorageFeature()  {
+    override fun initializeStorageFeature() {
         // We will need this to pass in dependencies to the StorageFeature.Provider
         val dependencies: StorageFeature.Dependencies = object : StorageFeature.Dependencies {
             override fun getContext(): Context = getApplication()

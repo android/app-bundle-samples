@@ -28,24 +28,27 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class) class CookieStorageActivityTest {
+@RunWith(AndroidJUnit4::class)
+class CookieStorageActivityTest {
 
     @JvmField
     @Rule val activityRule = object : ActivityTestRule<CookieStorageActivity>(
-            CookieStorageActivity::class.java,
-            true) {
+        CookieStorageActivity::class.java,
+        true
+    ) {
         override fun getActivityIntent(): Intent {
             return Intent()
-                    .addCategory(Intent.CATEGORY_BROWSABLE)
-                    .setAction(Intent.ACTION_VIEW)
-                    .setData(Uri.parse("https://cookie.instantappsample.com"))
+                .addCategory(Intent.CATEGORY_BROWSABLE)
+                .setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse("https://cookie.instantappsample.com"))
         }
     }
 
     /**
      * Tests whether the Activity can be launched via its registered URL.
      */
-    @Test fun isAddressableViaUrl() {
+    @Test
+    fun isAddressableViaUrl() {
         onView(withText(R.string.cookie_api_version)).check(matches(isDisplayed()))
     }
 }

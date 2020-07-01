@@ -27,24 +27,27 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class) class InstallApiActivityTest {
+@RunWith(AndroidJUnit4::class)
+class InstallApiActivityTest {
 
     @JvmField
     @Rule val testRule = object : ActivityTestRule<InstallApiActivity>(
-            InstallApiActivity::class.java,
-            true) {
+        InstallApiActivity::class.java,
+        true
+    ) {
         override fun getActivityIntent(): Intent {
             return Intent()
-                    .addCategory(Intent.CATEGORY_BROWSABLE)
-                    .setAction(Intent.ACTION_VIEW)
-                    .setData(Uri.parse("https://install-api.instantappsample.com/"))
+                .addCategory(Intent.CATEGORY_BROWSABLE)
+                .setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse("https://install-api.instantappsample.com/"))
         }
-    };
+    }
 
     /**
      * Tests whether the Activity can be launched via its registered URL.
      */
-    @Test fun isAddressableViaUrl() {
+    @Test
+    fun isAddressableViaUrl() {
         onView(withText(R.string.install_text)).check(matches(isDisplayed()))
     }
 }

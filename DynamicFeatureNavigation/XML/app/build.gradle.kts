@@ -50,7 +50,6 @@ android {
     packagingOptions {
         exclude("META-INF/**.version")
     }
-
 }
 
 dependencies {
@@ -91,7 +90,6 @@ android.applicationVariants.all(object : Action<ApplicationVariant> {
                     args = listOf("install-apks", "--apks", outputPath)
                     dependsOn("buildApks${variant.name.capitalize()}")
                 }
-
             }
         }
     }

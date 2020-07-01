@@ -27,5 +27,4 @@ class KotlinSampleActivity : BaseSplitActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feature_kotlin)
     }
-
 }
