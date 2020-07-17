@@ -19,8 +19,12 @@ plugins {
     id 'kotlin-android'
     // STOPSHIP
     // TODO remove before publishing sample
-    id 'com.github.triplet.play' version '2.7.2'
+    id 'com.github.triplet.play' version '2.8.0'
 }
+
+import com.google.android.samples.appbundle.BundleLocalTestingPlugin
+apply plugin: BundleLocalTestingPlugin
+
 android {
 
     compileSdkVersion versions.compileSdk
@@ -58,7 +62,7 @@ android {
     dynamicFeatures = [':features:picture', ':features:randomcolor']
 
     kotlinOptions {
-        freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
 
@@ -86,33 +90,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:${versions.lifecycle}"
 }
 
-def bundletoolJar = new File(project.rootDir, "third_party/bundletool/bundletool-all-0.13.3.jar")
-
-android.applicationVariants.all { variant ->
-    variant.outputs.each { apkOutput ->
-        def filePath = apkOutput.outputFile.absolutePath
-        def indexOfLast = filePath.lastIndexOf(".") + 1
-        filePath = filePath.substring(0, indexOfLast) + "aab"
-        filePath = filePath.replace("build/outputs/apk/", "build/outputs/bundle/")
-        def outputPath = filePath.replace("build/outputs/bundle/", "build/outputs/apks/")
-        indexOfLast = outputPath.lastIndexOf(".") + 1
-        outputPath = outputPath.substring(0, indexOfLast) + "apks"
-
-        tasks.register("buildApks${variant.name.capitalize()}", JavaExec) {
-            classpath = files(bundletoolJar)
-            args "build-apks", "--overwrite", "--local-testing", "--bundle", filePath, "--output", outputPath
-            dependsOn("bundle${variant.name.capitalize()}")
-        }
-
-        tasks.register("installApkSplitsForTest${variant.name.capitalize()}", JavaExec) {
-            classpath = files(bundletoolJar)
-            args "install-apks", "--apks", outputPath
-            dependsOn("buildApks${variant.name.capitalize()}")
-        }
-    }
-}
-
-// From ktlint getting started guide
+/* From ktlint getting started guide */
 configurations {
     ktlint
 }
@@ -135,3 +113,4 @@ task ktlintFormat(type: JavaExec, group: "cleanup") {
     classpath = configurations.ktlint
     args "-F", "src/**/*.kt"
 }
+/* end ktlint */

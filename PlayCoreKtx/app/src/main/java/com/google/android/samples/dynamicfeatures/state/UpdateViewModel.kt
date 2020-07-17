@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for InAppUpdates.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
 
     private val _immediateUpdate = MutableLiveData<Event<Boolean>>()
@@ -44,7 +45,6 @@ class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
     private val _flexibleUpdate = MutableLiveData<Event<Boolean>>()
     val flexibleUpdate: LiveData<Event<Boolean>> = _flexibleUpdate
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val updateStatus = manager.requestUpdateFlow().catch {
         toast("Update info not available")
     }.asLiveData()
@@ -52,7 +52,6 @@ class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
     private val _toastMessage = MutableLiveData<Event<String>>()
     val toastMessage: LiveData<Event<String>> = _toastMessage
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun invokeUpdate(fragment: Fragment, requestCode: Int = UPDATE_CONFIRMATION_REQ_CODE) {
         when (val updateResult = updateStatus.value) {
             AppUpdateResult.NotAvailable -> toast("No update available")

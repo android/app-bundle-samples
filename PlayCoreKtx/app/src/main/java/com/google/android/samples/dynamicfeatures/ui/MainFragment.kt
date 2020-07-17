@@ -47,9 +47,9 @@ import com.google.android.samples.dynamicfeatures.state.UpdateViewModel
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModelProviderFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainFragment : Fragment(R.layout.fragment_main) {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val installViewModel by viewModels<InstallViewModel> {
         InstallViewModelProviderFactory(SplitInstallManagerFactory.create(requireContext()))
     }
@@ -59,7 +59,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
     private lateinit var bindings: FragmentMainBinding
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         bindings = FragmentMainBinding.bind(view)
         with(bindings) {

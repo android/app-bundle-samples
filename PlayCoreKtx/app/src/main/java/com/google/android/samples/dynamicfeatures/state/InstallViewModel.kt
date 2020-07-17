@@ -101,7 +101,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
             }.asLiveData()
     }
 
-    @ExperimentalCoroutinesApi
     fun invokeRandomColor() {
         openActivityInOnDemandModule(
             RANDOM_COLOR_MODULE,
@@ -109,7 +108,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
         )
     }
 
-    @ExperimentalCoroutinesApi
     fun invokePictureSelection() {
         openActivityInOnDemandModule(
             PICTURE_MODULE,
@@ -117,7 +115,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
         )
     }
 
-    @ExperimentalCoroutinesApi
     private fun openActivityInOnDemandModule(moduleName: String, activityName: String) {
         if (manager.installedModules.contains(moduleName)) {
             _activityIntent.value = Event(
@@ -146,7 +143,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun requestModuleInstallation(moduleName: String) {
         viewModelScope.launch {
             try {
