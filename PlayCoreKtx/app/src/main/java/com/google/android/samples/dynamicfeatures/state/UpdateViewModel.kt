@@ -64,7 +64,7 @@ class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
                     } else if (isFlexibleUpdateAllowed) {
                         updateResult.startFlexibleUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
                     } else {
-                        throw IllegalStateException("This state is not legal.")
+                        throw IllegalStateException("Not implemented: Handling for $this")
                     }
                 }
             }

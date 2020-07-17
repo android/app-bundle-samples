@@ -64,9 +64,10 @@ class PaletteFragment : Fragment(R.layout.palette) {
                     it.notifyDataSetChanged()
                 }
             }
-            ColorSource.colorConsumed.observe(viewLifecycleOwner) { consumed ->
-                consumed.getContentIfNotHandled()?.also {
-                    if (!it) requireActivity().finish()
+            ColorSource.colorConsumed.observe(viewLifecycleOwner) { it ->
+                val consumed = it.getContentIfNotHandled()
+                if (consumed != null) {
+                    if (!consumed) requireActivity().finish()
                 }
             }
         }
@@ -79,15 +80,13 @@ class PaletteFragment : Fragment(R.layout.palette) {
     }
 }
 
-internal class PaletteAdapter :
-    RecyclerView.Adapter<PaletteHolder>() {
+internal class PaletteAdapter : RecyclerView.Adapter<PaletteHolder>() {
 
     var items = emptyList<Swatch>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         PaletteHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.color_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.color_item, parent, false)
         )
 
     override fun getItemCount() = items.size

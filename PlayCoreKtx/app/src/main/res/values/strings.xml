@@ -29,6 +29,7 @@
     <string name="start_update">Start update</string>
     <string name="downloading_update">Downloading update… %1$i</string>
     <string name="press_to_complete_update">Press here to complete update</string>
+    <string name="not_enough_memory">Your device has too little available memory to perform this action right now.<br/> Please select another action in the main screen.</string>
 
     <string name="module_feature_picture">Picture</string>
     <string name="module_feature_random_color">Random Color</string>

@@ -17,8 +17,8 @@ package com.google.android.samples.dynamicfeatures.state
 
 import android.app.Activity
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,6 +29,7 @@ import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.moduleNames
 import com.google.android.play.core.ktx.requestInstall
 import com.google.android.play.core.ktx.requestProgressFlow
+import com.google.android.play.core.ktx.startConfirmationDialogForResult
 import com.google.android.play.core.ktx.status
 import com.google.android.play.core.ktx.totalBytesToDownload
 import com.google.android.play.core.splitinstall.SplitInstallException
@@ -123,7 +124,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
                         "com.google.android.samples.playcore",
                         activityName
                     )
-                    flags = FLAG_ACTIVITY_NEW_TASK
                 })
         } else {
             val status = when (moduleName) {
@@ -132,10 +132,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
                 else -> throw IllegalArgumentException("State not implemented")
             }
             if (status is NeedsConfirmation) {
-                if (!_userConfirmationRequired.hasActiveObservers())
-                    _toastMessage.value = Event(
-                        "Make sure to register an observer for user confirmation!"
-                    )
                 _userConfirmationRequired.value = Event(status)
             } else {
                 requestModuleInstallation(moduleName)
@@ -158,6 +154,12 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
         activity: Activity,
         requestCode: Int = INSTALL_CONFIRMATION_REQ_CODE
     ) = manager.startConfirmationDialogForResult(state, activity, requestCode)
+
+    fun startConfirmationDialogForResult(
+        state: SplitInstallSessionState,
+        fragment: Fragment,
+        requestCode: Int = INSTALL_CONFIRMATION_REQ_CODE
+    ) = manager.startConfirmationDialogForResult(state, fragment, requestCode)
 }
 
 sealed class ModuleStatus {
