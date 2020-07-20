@@ -17,8 +17,10 @@
 
 package com.google.android.samples.appbundle
 
+import com.android.SdkConstants
 import com.android.build.api.artifact.ArtifactType
-import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -31,29 +33,38 @@ import org.gradle.api.Project
  */
 abstract class BundleLocalTestingPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.extensions.getByType(ApplicationExtension::class.java).onVariantProperties {
-            val buildApksTask = project.tasks.register(
-                    "${name}BuildApksForLocalTesting",
-                    BuildApksTask::class.java
-            ) {
-                it.aabFile.set(artifacts.get(ArtifactType.BUNDLE))
-                it.apksFile.set(it.aabFile.map { aab ->
-                    project.layout.buildDirectory
-                            .file("outputs/apks/$name/${aab.asFile.name}.apks")
-                            .get()
-                })
-                it.bundletoolJar.set(project.rootProject.file(BUNDLETOOL_PATH))
-            }
+        project.plugins.withType(AppPlugin::class.java) {
+            val android = project.extensions.getByName("android") as BaseAppModuleExtension
+            android.onVariants {
+                // we currently don't support passing signing configs to the build apks task
+                // so let's only create the tasks for debug variants or return early otherwise
+                if (!debuggable) {
+                    return@onVariants
+                }
+                onProperties {
+                    val buildApksTask = project.tasks.register(
+                            "${name}BuildApksForLocalTesting",
+                            BuildApksTask::class.java
+                    ) { buildApksTask ->
+                        buildApksTask.aabFile.set(artifacts.get(ArtifactType.BUNDLE))
+                        buildApksTask.apksFile.set(buildApksTask.aabFile.flatMap { aab ->
+                            project.layout.buildDirectory
+                                    .file("outputs/apks-for-local-testing/$name/${aab.asFile.name}.apks")
+                        })
+                        buildApksTask.aapt2Executable.set(android.sdkComponents.sdkDirectory.map {
+                            it.file("build-tools/${android.buildToolsVersion}/${SdkConstants.FN_AAPT2}")
+                        })
+                    }
 
-            project.tasks.register(
-                    "${name}InstallApksForLocalTesting",
-                    InstallApksTask::class.java
-            ) {
-                it.apksFile.set(buildApksTask.flatMap(BuildApksTask::apksFile))
-                it.bundletoolJar.set(project.rootProject.file(BUNDLETOOL_PATH))
+                    project.tasks.register(
+                            "${name}InstallApksForLocalTesting",
+                            InstallApksTask::class.java
+                    ) {
+                        it.apksFile.set(buildApksTask.flatMap(BuildApksTask::apksFile))
+                        it.adbExecutable.set(android.sdkComponents.adb)
+                    }
+                }
             }
         }
     }
 }
-
-const val BUNDLETOOL_PATH = "third_party/bundletool/bundletool-all-1.0.0.jar"

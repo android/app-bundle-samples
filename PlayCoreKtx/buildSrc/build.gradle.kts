@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright 2020 The Android Open Source Project
  *
@@ -15,6 +17,7 @@
  */
 plugins {
     kotlin("jvm") version "1.3.72"
+    id("java-gradle-plugin")
 }
 
 repositories {
@@ -24,6 +27,20 @@ repositories {
 
 dependencies {
     implementation("com.android.tools.build:gradle-api:4.1.0-beta04")
+    implementation("com.android.tools.build:gradle:4.1.0-beta04")
     implementation(kotlin("stdlib"))
     gradleApi()
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+gradlePlugin {
+    plugins {
+        create("bundleLocalTesting") {
+            id = "com.google.android.samples.appbundle-local-testing"
+            implementationClass = "com.google.android.samples.appbundle.BundleLocalTestingPlugin"
+        }
+    }
 }

@@ -17,10 +17,15 @@
 
 package com.google.android.samples.appbundle
 
+import com.android.tools.build.bundletool.BundleToolMain
+import com.android.tools.build.bundletool.commands.ExtractApksCommand
+import com.android.tools.build.bundletool.commands.InstallApksCommand
+import com.android.tools.build.bundletool.device.DdmlibAdbServer
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
@@ -29,11 +34,7 @@ import javax.inject.Inject
  * Invokes the `bundletool install-apks` command to install splits from an APKS file on a connected
  * device.
  */
-abstract class InstallApksTask @Inject constructor(
-        val execOperations: ExecOperations,
-        val objectFactory: ObjectFactory
-) : DefaultTask() {
-
+abstract class InstallApksTask : DefaultTask() {
     /**
      * The location of the input APKS file
      */
@@ -41,18 +42,17 @@ abstract class InstallApksTask @Inject constructor(
     abstract val apksFile: RegularFileProperty
 
     /**
-     * The location of the `bundletool` jar
+     * The location of the adb executable file
      */
-    @get:InputFile
-    abstract val bundletoolJar: RegularFileProperty
+    @get:Internal
+    abstract val adbExecutable: RegularFileProperty
 
     @TaskAction
     fun run() {
-        val apks = apksFile.get().asFile
-
-        execOperations.javaexec {
-            it.classpath = objectFactory.fileCollection().from(bundletoolJar)
-            it.args = listOf("install-apks", "--apks", apks.absolutePath)
-        }
+        InstallApksCommand.builder()
+                .setApksArchivePath(apksFile.get().asFile.toPath())
+                .setAdbServer(DdmlibAdbServer.getInstance())
+                .setAdbPath(adbExecutable.get().asFile.toPath())
+                .build().execute()
     }
 }

@@ -17,13 +17,9 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    // STOPSHIP
-    // TODO remove before publishing sample
-    id 'com.github.triplet.play' version '2.8.0'
+    id 'com.github.triplet.play' version '2.8.0' // STOPSHIP TODO remove before publishing sample
+    id 'com.google.android.samples.appbundle-local-testing'
 }
-
-import com.google.android.samples.appbundle.BundleLocalTestingPlugin
-apply plugin: BundleLocalTestingPlugin
 
 android {
 

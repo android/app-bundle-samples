@@ -17,28 +17,35 @@
 
 package com.google.android.samples.appbundle
 
+import com.android.tools.build.bundletool.commands.BuildApksCommand
+import com.android.tools.build.bundletool.commands.DebugKeystoreUtils
+import com.android.tools.build.bundletool.model.Aapt2Command
+import com.android.tools.build.bundletool.model.SigningConfiguration
+import com.android.tools.build.bundletool.model.utils.SystemEnvironmentProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
+
 /**
  * Invokes the `bundletool build-apks` command with the `--local-testing` flag to produce an APKS
  * file (an APK set) that can be used for local testing of dynamic feature modules or asset packs.
+ *
+ * It doesn't currently support custom signing configs and always tries to use the default debug
+ * android key store.
  */
-abstract class BuildApksTask @Inject constructor(
-        val execOperations: ExecOperations,
-        val objectFactory: ObjectFactory
-) : DefaultTask() {
+abstract class BuildApksTask : DefaultTask() {
     /**
-     * The location of the `bundletool` jar
+     * The location of the `aapt2` executable
      */
     @get:InputFile
-    abstract val bundletoolJar: RegularFileProperty
+    abstract val aapt2Executable: RegularFileProperty
 
     /**
      * The location of the input AAB file
@@ -57,9 +64,17 @@ abstract class BuildApksTask @Inject constructor(
         val aab = aabFile.get().asFile
         val apks = apksFile.get().asFile
 
-        execOperations.javaexec {
-            it.classpath = objectFactory.fileCollection().from(bundletoolJar)
-            it.args = listOf("build-apks", "--overwrite", "--local-testing", "--bundle", aab.absolutePath, "--output", apks.absolutePath)
-        }
+        val debugConfig = DebugKeystoreUtils.getDebugSigningConfiguration(SystemEnvironmentProvider.DEFAULT_PROVIDER)
+
+        BuildApksCommand.builder()
+                .setAapt2Command(
+                        Aapt2Command.createFromExecutablePath(aapt2Executable.get().asFile.toPath())
+                )
+                .setOverwriteOutput(true)
+                .setLocalTestingMode(true)
+                .setBundlePath(aab.toPath())
+                .setOutputFile(apks.toPath())
+                .setSigningConfiguration(debugConfig.get())
+                .build().execute()
     }
 }
