@@ -90,7 +90,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
             userConfirmationRequired.observe(viewLifecycleOwner, Observer { status ->
                 status.getContentIfNotHandled()?.let {
-                    startConfirmationDialogForResult(it.state, requireActivity())
+                    startConfirmationDialogForResult(it.state, this@MainFragment)
                 }
             })
 
@@ -127,7 +127,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     )
                 }
                 ModuleStatus.Unavailable -> {
-                    target.isEnabled = false
                     text = getString(R.string.feature_not_available)
                 }
                 ModuleStatus.Installed -> {

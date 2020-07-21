@@ -17,18 +17,24 @@
 package com.google.android.samples.dynamicfeatures.ondemand
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.FrameLayout.LayoutParams
 import android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.TakePicturePreview
 import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.observe
 import com.google.android.samples.dynamicfeatures.ui.BaseSplitActivity
 import com.google.android.samples.playcore.picture.R
 
-/** Activity holding [PictureFragment]. */
+/** Activity to take pictures and get palettes. */
 class PictureActivity : BaseSplitActivity() {
 
     private val viewModel by viewModels<PaletteViewModel>()
+    private lateinit var getPicturePreview: ActivityResultLauncher<Void>
+    private var resultHandled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,33 +42,43 @@ class PictureActivity : BaseSplitActivity() {
             id = R.id.fragmentContainer
             layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
         })
-        displayPictureFragment()
+        getPicturePreview = registerForActivityResult(TakePicturePreview()) {
+            if (it == null) {
+                finish()
+            } else {
+                viewModel.requestPalette(it)
+            }
+            resultHandled = true
+        }
+
         viewModel.swatches.observe(this) {
             if (it.isNotEmpty()) {
                 displayPaletteFragment()
             } else {
-                displayPictureFragment()
+                Log.w(TAG, "Issue generating Palette, attempting to get new picture.")
+                getPicturePreview.launch(null)
             }
         }
     }
 
-    private fun displayPictureFragment() {
+    override fun onResume() {
+        if (!resultHandled) getPicturePreview.launch(null)
+        super.onResume()
+    }
+
+    private fun displayPaletteFragment() = replaceFragment(PaletteFragment())
+
+    private fun replaceFragment(fragment: Fragment) {
         with(supportFragmentManager) {
             if (findFragmentById(R.id.fragment) == null) {
                 beginTransaction()
-                    .add(R.id.fragmentContainer, PictureFragment())
+                    .replace(R.id.fragmentContainer, fragment)
                     .commit()
             }
         }
     }
 
-    private fun displayPaletteFragment() {
-        with(supportFragmentManager) {
-            if (findFragmentById(R.id.fragment) == null) {
-                beginTransaction()
-                    .replace(R.id.fragmentContainer, PaletteFragment())
-                    .commit()
-            }
-        }
+    companion object {
+        private const val TAG = "PictureActivity"
     }
 }
