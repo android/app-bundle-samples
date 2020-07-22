@@ -26,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle-api:4.1.0-beta04")
-    implementation("com.android.tools.build:gradle:4.1.0-beta04")
+    implementation("com.android.tools.build:gradle-api:4.2.0-alpha06")
+    implementation("com.android.tools.build:gradle:4.2.0-alpha06")
     implementation(kotlin("stdlib"))
     gradleApi()
 }

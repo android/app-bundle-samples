@@ -39,39 +39,48 @@ class PaletteFragment : Fragment(R.layout.palette) {
 
     private var binding: PaletteBinding? = null
     // Using activityViewModels here as Palette is passed into another fragment once it's generated.
-    private val viewModel by activityViewModels<PaletteViewModel>()
+    private val paletteViewModel by activityViewModels<PaletteViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = PaletteBinding.inflate(inflater, container, false)
-        return binding!!.root
+        return PaletteBinding.inflate(inflater, container, false).also {
+            binding = it
+        }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding!!.recyclerView) {
             layoutManager = GridLayoutManager(requireActivity(), 2)
             setHasFixedSize(true)
-            adapter = PaletteAdapter().also {
-                if (!viewModel.swatches.value.isNullOrEmpty()) {
-                    it.items = viewModel.swatches.value!!
-                    it.notifyDataSetChanged()
-                }
-                viewModel.swatches.observe(viewLifecycleOwner) { swatchList ->
-                    it.items = swatchList
-                    it.notifyDataSetChanged()
-                }
+            adapter = instantiatePaletteAdapter()
+        }
+        setColorConsumedObserver()
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun instantiatePaletteAdapter(): PaletteAdapter {
+        return PaletteAdapter().apply {
+            if (!paletteViewModel.swatches.value.isNullOrEmpty()) {
+                items = paletteViewModel.swatches.value!!
+                notifyDataSetChanged()
             }
-            ColorSource.colorConsumed.observe(viewLifecycleOwner) { it ->
-                val consumed = it.getContentIfNotHandled()
-                if (consumed != null) {
-                    if (!consumed) requireActivity().finish()
-                }
+            paletteViewModel.swatches.observe(viewLifecycleOwner) { swatchList ->
+                items = swatchList
+                notifyDataSetChanged()
             }
         }
-        super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun setColorConsumedObserver() {
+        ColorSource.colorConsumed.observe(viewLifecycleOwner) {
+            val consumed = it.getContentIfNotHandled()
+            if (consumed != null && !consumed) {
+                requireActivity().finish()
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -94,14 +103,14 @@ internal class PaletteAdapter : RecyclerView.Adapter<PaletteHolder>() {
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PaletteHolder, position: Int) {
         with(holder.itemView as Button) {
+            val backgroundColor = items[position].rgb
             val bodyTextColor = items[position].bodyTextColor
-            val color = items[position].rgb
+            setBackgroundColor(backgroundColor)
             setTextColor(bodyTextColor)
-            setBackgroundColor(color)
-            text = "#${Integer.toHexString(color).substring(2)}"
+            text = "#${Integer.toHexString(backgroundColor).substring(2)}"
 
             setOnClickListener {
-                ColorSource.backgroundColor = color
+                ColorSource.backgroundColor = backgroundColor
                 ColorSource.textColor = bodyTextColor
             }
         }

@@ -15,10 +15,7 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
-import android.app.Activity
-import android.content.Intent
 import android.util.Log
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,7 +26,6 @@ import com.google.android.play.core.ktx.bytesDownloaded
 import com.google.android.play.core.ktx.moduleNames
 import com.google.android.play.core.ktx.requestInstall
 import com.google.android.play.core.ktx.requestProgressFlow
-import com.google.android.play.core.ktx.startConfirmationDialogForResult
 import com.google.android.play.core.ktx.status
 import com.google.android.play.core.ktx.totalBytesToDownload
 import com.google.android.play.core.splitinstall.SplitInstallException
@@ -59,8 +55,8 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
     private val _userConfirmationRequired = MutableLiveData<Event<NeedsConfirmation>>()
     val userConfirmationRequired = _userConfirmationRequired
 
-    private val _activityIntent = MutableLiveData<Event<Intent>>()
-    val activityIntent: LiveData<Event<Intent>> = _activityIntent
+    private val _destinationClass = MutableLiveData<Event<Destination>>()
+    val destinationClass: LiveData<Event<Destination>> = _destinationClass
 
     val randomColorModuleStatus = getStatusLiveDataForModule(RANDOM_COLOR_MODULE)
     val pictureModuleStatus = getStatusLiveDataForModule(PICTURE_MODULE)
@@ -118,13 +114,9 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
 
     private fun openActivityInOnDemandModule(moduleName: String, activityName: String) {
         if (manager.installedModules.contains(moduleName)) {
-            _activityIntent.value = Event(
-                Intent().apply {
-                    setClassName(
-                        "com.google.android.samples.playcore",
-                        activityName
-                    )
-                })
+            _destinationClass.value = Event(
+                Destination("com.google.android.samples.playcore", activityName)
+            )
         } else {
             val status = when (moduleName) {
                 RANDOM_COLOR_MODULE -> randomColorModuleStatus.value
@@ -148,18 +140,6 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
             }
         }
     }
-
-    fun startConfirmationDialogForResult(
-        state: SplitInstallSessionState,
-        activity: Activity,
-        requestCode: Int = INSTALL_CONFIRMATION_REQ_CODE
-    ) = manager.startConfirmationDialogForResult(state, activity, requestCode)
-
-    fun startConfirmationDialogForResult(
-        state: SplitInstallSessionState,
-        fragment: Fragment,
-        requestCode: Int = INSTALL_CONFIRMATION_REQ_CODE
-    ) = manager.startConfirmationDialogForResult(state, fragment, requestCode)
 }
 
 sealed class ModuleStatus {
@@ -177,6 +157,9 @@ class InstallViewModelProviderFactory(
         return modelClass.getConstructor(SplitInstallManager::class.java).newInstance(manager)
     }
 }
+
+/** Destination for Activity. */
+data class Destination(val destPackage: String, val activity: String)
 
 const val RANDOM_COLOR_MODULE = "randomcolor"
 const val PICTURE_MODULE = "picture"

@@ -24,6 +24,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.AppUpdateResult.Available
@@ -31,7 +33,10 @@ import com.google.android.play.core.ktx.AppUpdateResult.Downloaded
 import com.google.android.play.core.ktx.AppUpdateResult.InProgress
 import com.google.android.play.core.ktx.AppUpdateResult.NotAvailable
 import com.google.android.play.core.ktx.bytesDownloaded
+import com.google.android.play.core.ktx.launchReview
+import com.google.android.play.core.ktx.startConfirmationDialogForResult
 import com.google.android.play.core.ktx.totalBytesToDownload
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
 import com.google.android.samples.dynamicfeatures.R
 import com.google.android.samples.dynamicfeatures.databinding.FragmentMainBinding
@@ -42,21 +47,32 @@ import com.google.android.samples.dynamicfeatures.state.InstallError
 import com.google.android.samples.dynamicfeatures.state.InstallViewModel
 import com.google.android.samples.dynamicfeatures.state.InstallViewModelProviderFactory
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus
+import com.google.android.samples.dynamicfeatures.state.ReviewViewModel
+import com.google.android.samples.dynamicfeatures.state.ReviewViewModelProviderFactory
 import com.google.android.samples.dynamicfeatures.state.UPDATE_CONFIRMATION_REQ_CODE
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModel
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModelProviderFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainFragment : Fragment(R.layout.fragment_main) {
 
+    private val splitInstallManager by lazy { SplitInstallManagerFactory.create(requireContext()) }
     private val installViewModel by viewModels<InstallViewModel> {
-        InstallViewModelProviderFactory(SplitInstallManagerFactory.create(requireContext()))
+        InstallViewModelProviderFactory(splitInstallManager)
     }
 
+    private val appUpdateManager by lazy { AppUpdateManagerFactory.create(requireContext()) }
     private val updateViewModel by viewModels<UpdateViewModel> {
-        UpdateViewModelProviderFactory(AppUpdateManagerFactory.create(requireContext()))
+        UpdateViewModelProviderFactory(appUpdateManager)
     }
+
+    private val reviewManager by lazy { ReviewManagerFactory.create(requireContext()) }
+    private val reviewViewModel by viewModels<ReviewViewModel> {
+        ReviewViewModelProviderFactory(reviewManager)
+    }
+
     private lateinit var bindings: FragmentMainBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,13 +87,14 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         addInstallViewModelObservers()
         addUpdateViewModelObservers()
+        addReviewViewModelObservers()
     }
 
     private fun addInstallViewModelObservers() {
         with(installViewModel) {
             toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
             errorMessage.observe(
-                viewLifecycleOwner, EventObserver(::processInstallError)
+                    viewLifecycleOwner, EventObserver(::processInstallError)
             )
 
             pictureModuleStatus.observe(viewLifecycleOwner, Observer { status ->
@@ -90,13 +107,17 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
             userConfirmationRequired.observe(viewLifecycleOwner, Observer { status ->
                 status.getContentIfNotHandled()?.let {
-                    startConfirmationDialogForResult(it.state, this@MainFragment)
+                    splitInstallManager.startConfirmationDialogForResult(
+                            it.state,
+                            this@MainFragment,
+                            INSTALL_CONFIRMATION_REQ_CODE
+                    )
                 }
             })
 
-            activityIntent.observe(viewLifecycleOwner, Observer { status ->
+            destinationClass.observe(viewLifecycleOwner, Observer { status ->
                 status.getContentIfNotHandled()?.let {
-                    startActivity(it)
+                    startActivity(Intent().setClassName(it.destPackage, it.activity))
                 }
             })
         }
@@ -105,11 +126,19 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun addUpdateViewModelObservers() {
         with(updateViewModel) {
             updateStatus.observe(
-                viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
-                    updateUpdateButton(updateResult)
-                })
+                    viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
+                updateUpdateButton(updateResult)
+            })
 
             toastMessage.observe(viewLifecycleOwner, EventObserver(::toastAndLog))
+        }
+    }
+
+    private fun addReviewViewModelObservers() {
+        reviewViewModel.reviewInfo.observe(viewLifecycleOwner) {
+            lifecycleScope.launch {
+                reviewManager.launchReview(requireActivity(), it)
+            }
         }
     }
 
@@ -122,8 +151,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 }
                 is ModuleStatus.Installing -> {
                     text = getString(
-                        R.string.installing,
-                        (status.progress * 100).toInt()
+                            R.string.installing,
+                            (status.progress * 100).toInt()
                     )
                 }
                 ModuleStatus.Unavailable -> {
@@ -133,9 +162,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     text = getString(R.string.start)
                 }
                 is ModuleStatus.NeedsConfirmation -> {
-                    installViewModel.startConfirmationDialogForResult(
-                        status.state,
-                        requireActivity()
+                    splitInstallManager.startConfirmationDialogForResult(
+                            status.state,
+                            requireActivity(),
+                            INSTALL_CONFIRMATION_REQ_CODE
                     )
                 }
             }
@@ -157,8 +187,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                     visibility = View.VISIBLE
                     isEnabled = false
                     val updateProgress =
-                        updateResult.installState.bytesDownloaded * 100 /
-                            updateResult.installState.totalBytesToDownload
+                            updateResult.installState.bytesDownloaded * 100 /
+                                    updateResult.installState.totalBytesToDownload
                     text = context.getString(R.string.downloading_update, updateProgress)
                 }
             }
@@ -177,6 +207,13 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         with(ColorSource) {
             view?.setBackgroundColor(backgroundColor)
             bindings.instructions.setTextColor(textColor)
+            // Once the color has been set a review can be requested.
+            val reviewInfo = reviewViewModel.reviewInfo.value
+            if (reviewInfo != null) {
+                lifecycleScope.launch {
+                    reviewManager.launchReview(requireActivity(), reviewInfo)
+                }
+            }
         }
     }
 
@@ -206,7 +243,7 @@ fun MainFragment.toastAndLog(text: String) {
 
 fun MainFragment.processInstallError(installError: InstallError) {
     toastAndLog(
-        getString(R.string.error_for_module, installError.errorCode, installError.moduleNames)
+            getString(R.string.error_for_module, installError.errorCode, installError.moduleNames)
     )
 }
 

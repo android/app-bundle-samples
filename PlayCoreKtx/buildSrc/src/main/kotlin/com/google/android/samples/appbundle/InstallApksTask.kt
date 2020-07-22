@@ -17,18 +17,13 @@
 
 package com.google.android.samples.appbundle
 
-import com.android.tools.build.bundletool.BundleToolMain
-import com.android.tools.build.bundletool.commands.ExtractApksCommand
 import com.android.tools.build.bundletool.commands.InstallApksCommand
 import com.android.tools.build.bundletool.device.DdmlibAdbServer
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.ExecOperations
-import javax.inject.Inject
 
 /**
  * Invokes the `bundletool install-apks` command to install splits from an APKS file on a connected

@@ -20,18 +20,12 @@ package com.google.android.samples.appbundle
 import com.android.tools.build.bundletool.commands.BuildApksCommand
 import com.android.tools.build.bundletool.commands.DebugKeystoreUtils
 import com.android.tools.build.bundletool.model.Aapt2Command
-import com.android.tools.build.bundletool.model.SigningConfiguration
 import com.android.tools.build.bundletool.model.utils.SystemEnvironmentProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.ExecOperations
-import javax.inject.Inject
-
 
 /**
  * Invokes the `bundletool build-apks` command with the `--local-testing` flag to produce an APKS
