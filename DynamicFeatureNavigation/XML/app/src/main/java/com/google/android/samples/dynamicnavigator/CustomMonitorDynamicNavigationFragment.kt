@@ -25,6 +25,7 @@ import androidx.navigation.dynamicfeatures.DynamicInstallMonitor
 import androidx.navigation.fragment.findNavController
 import com.google.android.play.core.splitinstall.SplitInstallSessionState
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
+import com.google.android.samples.dynamicnavigator.databinding.FragmentNavigateDynamicBinding
 
 /**
  * Load and display navigation destinations using a custom [DynamicInstallMonitor].
@@ -32,24 +33,27 @@ import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
  */
 class CustomMonitorDynamicNavigationFragment : Fragment(R.layout.fragment_navigate_dynamic) {
 
+    private var viewBinding: FragmentNavigateDynamicBinding? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val navController = findNavController()
+        viewBinding = FragmentNavigateDynamicBinding.bind(view).also {
+            mapOf(
+                Pair(it.feature, R.id.featureFragment),
+                Pair(it.featureActivity, R.id.featureActivity),
+                Pair(it.nestedGraph, R.id.nestedGraph),
+                Pair(it.includedGraph, R.id.includedGraph)
+            ).forEach { (targetView, destinationId) ->
+                targetView.setOnClickListener { button ->
+                    val installMonitor = DynamicInstallMonitor()
+                    val dynamicExtras = DynamicExtras(installMonitor)
 
-        mapOf(
-            Pair(R.id.feature, R.id.featureFragment),
-            Pair(R.id.feature_activity, R.id.featureActivity),
-            Pair(R.id.nested_graph, R.id.nestedGraph),
-            Pair(R.id.included_graph, R.id.includedGraph)
-        ).forEach { (targetViewId, destinationId) ->
-            view.findViewById<Button>(targetViewId).setOnClickListener { button ->
-                val installMonitor = DynamicInstallMonitor()
-                val dynamicExtras = DynamicExtras(installMonitor)
+                    navController.navigate(destinationId, null, null, dynamicExtras)
 
-                navController.navigate(destinationId, null, null, dynamicExtras)
-
-                if (installMonitor.isInstallRequired) {
-                    observeInstallationState(installMonitor, button)
+                    if (installMonitor.isInstallRequired) {
+                        observeInstallationState(installMonitor, button)
+                    }
                 }
             }
         }
