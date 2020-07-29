@@ -17,4 +17,5 @@
 <resources>
     <string name="hello_feature_fragment">This is a Fragment within a dynamic feature module.</string>
     <string name="hello_activity_feature">This is an Activity within a dynamic feature module.</string>
+    <string name="navigate_to_included_graph">Navigate to Included Graph Feature</string>
 </resources>
