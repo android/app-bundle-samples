@@ -17,6 +17,26 @@
 package com.google.android.samples.dynamicnavigator.includedgraphfeature
 
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.google.android.samples.dynamicnavigator.R as baseR
+import com.google.android.samples.dynamicnavigator.includedgraphfeature.databinding.FragmentIncludedFeatureBinding
 
 /** A basic [Fragment] subclass that's inside of an included navigation graph. */
-class IncludedFeatureFragment : Fragment(R.layout.fragment_included_feature)
+class IncludedFeatureFragment : Fragment(R.layout.fragment_included_feature) {
+
+    private var viewBinding: FragmentIncludedFeatureBinding? = null
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding = FragmentIncludedFeatureBinding.bind(view).also {
+            it.navigateToFeatureFragment.setOnClickListener {
+                findNavController().navigate(baseR.id.nestedGraph)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        viewBinding = null
+        super.onDestroy()
+    }
+}
