@@ -18,24 +18,30 @@ package com.google.android.samples.dynamicnavigator
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.samples.dynamicnavigator.databinding.FragmentMainBinding
 
 /** The primary fragment displaying navigation monitoring options. */
 class MainFragment : Fragment(R.layout.fragment_main) {
 
+    private var viewBinding: FragmentMainBinding? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val navController = findNavController()
-
-        mapOf(
-            Pair(R.id.default_monitor, R.id.defaultMonitorFragment),
-            Pair(R.id.custom_monitor, R.id.customMonitorFragment)
-        ).forEach { (viewId, destinationId) ->
-            view.findViewById<Button>(viewId).setOnClickListener {
-                navController.navigate(destinationId)
+        viewBinding = FragmentMainBinding.bind(view).also {
+            it.defaultMonitor.setOnClickListener {
+                navController.navigate(R.id.defaultMonitorFragment)
+            }
+            it.customMonitor.setOnClickListener {
+                navController.navigate(R.id.customMonitorFragment)
             }
         }
+    }
+
+    override fun onDestroy() {
+        viewBinding = null
+        super.onDestroy()
     }
 }
