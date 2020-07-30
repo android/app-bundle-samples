@@ -36,8 +36,7 @@ buildscript {
     ]
 
     ext.names = [
-        'applicationId': 'me.kalicinski.example.dynamicfeatures'
-//        'applicationId': 'com.google.android.samples.playcore'
+        'applicationId': 'com.google.android.samples.playcore'
     ]
 
     if (project.hasProperty("packageNameOverride")) {
