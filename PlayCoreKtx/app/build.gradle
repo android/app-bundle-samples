@@ -55,7 +55,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    dynamicFeatures = [':features:picture', ':features:randomcolor']
+    dynamicFeatures = [':features:picture']
 
     kotlinOptions {
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"

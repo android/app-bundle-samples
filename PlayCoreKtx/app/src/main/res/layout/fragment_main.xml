@@ -52,22 +52,10 @@
         android:layout_height="wrap_content"
         android:enabled="false"
         android:text="@string/update_available"
-        app:layout_constraintBottom_toTopOf="@id/btn_invoke_random"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/instructions" />
-
-    <Button
-        android:id="@+id/btn_invoke_random"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/random_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_update" />
+        app:layout_constraintTop_toBottomOf="@+id/instructions" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_invoke_palette"

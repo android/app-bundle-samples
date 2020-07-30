@@ -20,8 +20,12 @@ import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
 import androidx.palette.graphics.Palette.Swatch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PaletteViewModel : ViewModel() {
 
@@ -29,8 +33,11 @@ class PaletteViewModel : ViewModel() {
     val swatches: LiveData<List<Swatch>> = _swatchesLiveData
 
     fun requestPalette(bitmap: Bitmap) {
-        Palette.from(bitmap).generate { palette ->
-            palette?.swatches?.let {
+        viewModelScope.launch {
+            val palette = withContext(Dispatchers.Default) {
+                Palette.from(bitmap).generate()
+            }
+            palette.swatches.let {
                 _swatchesLiveData.value = it
             }
         }

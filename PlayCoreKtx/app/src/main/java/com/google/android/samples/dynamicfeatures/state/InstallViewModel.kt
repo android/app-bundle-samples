@@ -17,7 +17,6 @@ package com.google.android.samples.dynamicfeatures.state
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -32,34 +31,33 @@ import com.google.android.play.core.splitinstall.SplitInstallException
 import com.google.android.play.core.splitinstall.SplitInstallManager
 import com.google.android.play.core.splitinstall.SplitInstallSessionState
 import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
+import com.google.android.samples.dynamicfeatures.state.Event.InstallConfirmationEvent
+import com.google.android.samples.dynamicfeatures.state.Event.InstallErrorEvent
+import com.google.android.samples.dynamicfeatures.state.Event.NavigationEvent
+import com.google.android.samples.dynamicfeatures.state.Event.ToastEvent
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Available
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Installed
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Installing
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus.NeedsConfirmation
 import com.google.android.samples.dynamicfeatures.state.ModuleStatus.Unavailable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
 
-    private val _toastMessage = MutableLiveData<Event<String>>()
-    val toastMessage: LiveData<Event<String>> = _toastMessage
-
-    private val _errorMessage = MutableLiveData<Event<InstallError>>()
-    val errorMessage: LiveData<Event<InstallError>> = _errorMessage
-
-    private val _userConfirmationRequired = MutableLiveData<Event<NeedsConfirmation>>()
-    val userConfirmationRequired = _userConfirmationRequired
-
-    private val _destinationClass = MutableLiveData<Event<Destination>>()
-    val destinationClass: LiveData<Event<Destination>> = _destinationClass
-
-    val randomColorModuleStatus = getStatusLiveDataForModule(RANDOM_COLOR_MODULE)
     val pictureModuleStatus = getStatusLiveDataForModule(PICTURE_MODULE)
+
+    private val _events: BroadcastChannel<Event> = BroadcastChannel(Channel.BUFFERED)
+    val events: Flow<Event> = _events.asFlow()
 
     private fun getStatusLiveDataForModule(moduleName: String): LiveData<ModuleStatus> {
         return manager.requestProgressFlow()
@@ -76,8 +74,7 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
                         state.bytesDownloaded.toDouble() / state.totalBytesToDownload
                     )
                     SplitInstallSessionStatus.FAILED -> {
-                        _errorMessage.value =
-                            Event(InstallError(state.errorCode(), state.moduleNames.toString()))
+                        _events.send(InstallErrorEvent(state))
                         Available
                     }
                     SplitInstallSessionStatus.INSTALLED -> Installed
@@ -90,41 +87,34 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
                     else -> Unavailable
                 }
             }.catch {
-                _toastMessage.value =
-                    Event(
+                _events.send(ToastEvent(
                         "Something went wrong. No install progress will be reported."
-                    )
+                    ))
                 emit(Unavailable)
             }.asLiveData()
-    }
-
-    fun invokeRandomColor() {
-        openActivityInOnDemandModule(
-            RANDOM_COLOR_MODULE,
-            "com.google.android.samples.dynamicfeatures.ondemand.RandomColorActivity"
-        )
     }
 
     fun invokePictureSelection() {
         openActivityInOnDemandModule(
             PICTURE_MODULE,
-            "com.google.android.samples.dynamicfeatures.ondemand.PictureActivity"
+            "com.google.android.samples.dynamicfeatures.ondemand.PaletteFragment"
         )
     }
 
-    private fun openActivityInOnDemandModule(moduleName: String, activityName: String) {
+    private fun openActivityInOnDemandModule(moduleName: String, fragmentName: String) {
         if (manager.installedModules.contains(moduleName)) {
-            _destinationClass.value = Event(
-                Destination("com.google.android.samples.playcore", activityName)
-            )
+            viewModelScope.launch {
+                _events.send(NavigationEvent(fragmentName))
+            }
         } else {
             val status = when (moduleName) {
-                RANDOM_COLOR_MODULE -> randomColorModuleStatus.value
                 PICTURE_MODULE -> pictureModuleStatus.value
                 else -> throw IllegalArgumentException("State not implemented")
             }
             if (status is NeedsConfirmation) {
-                _userConfirmationRequired.value = Event(status)
+                viewModelScope.launch {
+                    _events.send(InstallConfirmationEvent(status.state))
+                }
             } else {
                 requestModuleInstallation(moduleName)
             }
@@ -136,7 +126,7 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
             try {
                 manager.requestInstall(listOf(moduleName))
             } catch (e: SplitInstallException) {
-                _toastMessage.value = Event("Failed starting installation of $moduleName")
+                _events.send(ToastEvent("Failed starting installation of $moduleName"))
             }
         }
     }
@@ -158,9 +148,4 @@ class InstallViewModelProviderFactory(
     }
 }
 
-/** Destination for Activity. */
-data class Destination(val destPackage: String, val activity: String)
-
-const val RANDOM_COLOR_MODULE = "randomcolor"
 const val PICTURE_MODULE = "picture"
-const val INSTALL_CONFIRMATION_REQ_CODE = 1

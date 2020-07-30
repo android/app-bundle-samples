@@ -15,5 +15,4 @@
  */
 
 include ':app',
-        ':features:picture',
-        ':features:randomcolor'
+        ':features:picture'

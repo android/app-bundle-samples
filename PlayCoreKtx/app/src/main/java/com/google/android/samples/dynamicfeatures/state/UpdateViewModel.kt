@@ -15,9 +15,6 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -30,60 +27,61 @@ import com.google.android.play.core.ktx.isImmediateUpdateAllowed
 import com.google.android.play.core.ktx.requestUpdateFlow
 import com.google.android.play.core.ktx.updatePriority
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for InAppUpdates.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
-
-    private val _immediateUpdate = MutableLiveData<Event<Boolean>>()
-    val immediateUpdate: LiveData<Event<Boolean>> = _immediateUpdate
-
-    private val _flexibleUpdate = MutableLiveData<Event<Boolean>>()
-    val flexibleUpdate: LiveData<Event<Boolean>> = _flexibleUpdate
-
     val updateStatus = manager.requestUpdateFlow().catch {
-        toast("Update info not available")
+        _events.send(Event.ToastEvent("Update info not available"))
     }.asLiveData()
 
-    private val _toastMessage = MutableLiveData<Event<String>>()
-    val toastMessage: LiveData<Event<String>> = _toastMessage
+    private val _events = BroadcastChannel<Event>(Channel.BUFFERED)
+    val events = _events.asFlow()
 
-    fun invokeUpdate(fragment: Fragment, requestCode: Int = UPDATE_CONFIRMATION_REQ_CODE) {
+    fun invokeUpdate() {
         when (val updateResult = updateStatus.value) {
-            AppUpdateResult.NotAvailable -> toast("No update available")
+            AppUpdateResult.NotAvailable -> viewModelScope.launch {
+                _events.send(Event.ToastEvent("No update available"))
+            }
             is AppUpdateResult.Available -> {
                 with(updateResult.updateInfo) {
-                    if ((clientVersionStalenessDays ?: 0) > 7 && isImmediateUpdateAllowed) {
-                        updateResult.startImmediateUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
-                    } else if (updatePriority > 4 && isImmediateUpdateAllowed) {
-                        updateResult.startImmediateUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
+                    if (isImmediateUpdateAllowed
+                            &&
+                            (clientVersionStalenessDays ?: 0 > 7
+                                    || updatePriority > 4)
+                    ) {
+                        viewModelScope.launch {
+                            _events.send(Event.StartUpdateEvent(updateResult.updateInfo, true))
+                        }
                     } else if (isFlexibleUpdateAllowed) {
-                        updateResult.startFlexibleUpdate(fragment, UPDATE_CONFIRMATION_REQ_CODE)
+                        viewModelScope.launch {
+                            _events.send(Event.StartUpdateEvent(updateResult.updateInfo, false))
+                        }
                     } else {
                         throw IllegalStateException("Not implemented: Handling for $this")
                     }
                 }
             }
-            is AppUpdateResult.InProgress -> toast("Update already in progress")
+            is AppUpdateResult.InProgress -> viewModelScope.launch {
+                _events.send(Event.ToastEvent("Update already in progress"))
+            }
             is AppUpdateResult.Downloaded -> viewModelScope.launch {
                 updateResult.completeUpdate()
             }
         }
     }
-
-    private fun toast(message: String) {
-        _toastMessage.value = Event(message)
-    }
 }
 
-const val UPDATE_CONFIRMATION_REQ_CODE = 2
-
 class UpdateViewModelProviderFactory(
-    private val manager: AppUpdateManager
+        private val manager: AppUpdateManager
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(AppUpdateManager::class.java).newInstance(manager)

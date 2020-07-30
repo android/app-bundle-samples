@@ -15,39 +15,13 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
-import androidx.lifecycle.Observer
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.splitinstall.SplitInstallSessionState
 
-/**
- * Used as a wrapper for data that is exposed via a LiveData that represents an event.
- */
-open class Event<out T>(private val content: T) {
-
-    private var hasBeenHandled = false
-
-    /**
-     * Returns the content and prevents its use again.
-     */
-    fun getContentIfNotHandled(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
-            content
-        }
-    }
-
-    /**
-     * Returns the content, even if it's already been handled.
-     */
-    fun peekContent(): T = content
+sealed class Event {
+    data class ToastEvent(val message: String) : Event()
+    data class NavigationEvent(val fragmentClass: String) : Event()
+    data class InstallConfirmationEvent(val status: SplitInstallSessionState) : Event()
+    data class InstallErrorEvent(val status: SplitInstallSessionState) : Event()
+    data class StartUpdateEvent(val updateInfo: AppUpdateInfo, val immediate: Boolean) : Event()
 }
-
-class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
-    override fun onChanged(event: Event<T>?) {
-        event?.getContentIfNotHandled()?.let { value ->
-            onEventUnhandledContent(value)
-        }
-    }
-}
-
-data class InstallError(val errorCode: Int, val moduleNames: String)

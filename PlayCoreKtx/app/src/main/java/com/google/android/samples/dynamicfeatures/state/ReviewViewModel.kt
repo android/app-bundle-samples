@@ -1,31 +1,37 @@
 package com.google.android.samples.dynamicfeatures.state
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.play.core.ktx.requestReview
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ReviewViewModel(private val reviewManager: ReviewManager) : ViewModel() {
-    private val _reviewInfo = MutableLiveData<ReviewInfo>()
-    val reviewInfo: LiveData<ReviewInfo> = _reviewInfo
+    private var reviewInfo: ReviewInfo? = null
 
-    init {
+    fun preWarmReview() {
         viewModelScope.launch {
-            val info = reviewManager.requestReview()
-            _reviewInfo.value = info
+            reviewInfo = reviewManager.requestReview()
+            Log.d("REVIEW", "got reviewinfo: $reviewInfo")
         }
+    }
+
+    suspend fun getReviewInfo(): ReviewInfo = withContext(Dispatchers.Main.immediate) {
+        val info = reviewInfo ?: reviewManager.requestReview() // TODO this is wrong, can launch 2 requestreviews
+        reviewInfo = null
+        info
     }
 }
 
 class ReviewViewModelProviderFactory(
     private val manager: ReviewManager
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(ReviewManager::class.java).newInstance(manager)
     }
 }
