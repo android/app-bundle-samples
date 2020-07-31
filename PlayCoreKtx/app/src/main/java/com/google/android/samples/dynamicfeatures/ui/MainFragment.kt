@@ -71,6 +71,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private val installViewModel by viewModels<InstallViewModel> {
         InstallViewModelProviderFactory(splitInstallManager)
     }
+    private var startModuleWhenReady: Boolean = false
+
 
     private lateinit var appUpdateManager: AppUpdateManager
     private val updateViewModel by viewModels<UpdateViewModel> {
@@ -96,9 +98,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         bindings = FragmentMainBinding.bind(view).apply {
             btnInvokePalette.setOnClickListener {
+                startModuleWhenReady = true
                 installViewModel.invokePictureSelection()
             }
             btnToggleLight.setOnClickListener { light ->
+                startModuleWhenReady = false
                 val drawable = (light as ImageView).drawable as AnimatedVectorDrawable
                 val colorBackground = ContextCompat.getColor(requireContext(), R.color.background)
                 colorViewModel.backgroundColor.onEach {
@@ -181,24 +185,31 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun updateModuleButton(status: ModuleStatus) {
-        bindings?.btnInvokePalette?.isEnabled = status !is ModuleStatus.Unavailable
-        with(bindings?.moduleState!!) {
+        bindings?.btnInvokePalette?.apply {
+            isEnabled = status !is ModuleStatus.Unavailable
             when (status) {
                 ModuleStatus.Available -> {
                     text = getString(R.string.install)
+                    shrink()
                 }
                 is ModuleStatus.Installing -> {
                     text = getString(
                             R.string.installing,
                             (status.progress * 100).toInt()
                     )
+                    extend()
                 }
                 ModuleStatus.Unavailable -> {
                     text = getString(R.string.feature_not_available)
+                    shrink()
                 }
                 ModuleStatus.Installed -> {
                     SplitCompat.installActivity(requireActivity())
-                    text = getString(R.string.start)
+                    shrink()
+                    if (startModuleWhenReady) {
+                        startModuleWhenReady = false
+                        installViewModel.invokePictureSelection()
+                    }
                 }
                 is ModuleStatus.NeedsConfirmation -> {
                     splitInstallManager.startConfirmationDialogForResult(
@@ -239,8 +250,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
             is Downloaded -> {
                 with(snackbar) {
-                    setText("Update downloaded successfully")
-                    setAction("Complete update") {
+                    setText(R.string.update_downloaded)
+                    setAction(R.string.complete_update) {
                         updateViewModel.invokeUpdate()
                     }
                     show()

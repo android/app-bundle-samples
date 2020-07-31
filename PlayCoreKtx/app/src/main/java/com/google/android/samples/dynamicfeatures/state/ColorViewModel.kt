@@ -15,6 +15,7 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
+import android.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ColorViewModel : ViewModel() {
-    val backgroundColor = MutableStateFlow(0)
+    val backgroundColor = MutableStateFlow(Color.YELLOW)
     var ignoreFirstValue = true
 
     init {

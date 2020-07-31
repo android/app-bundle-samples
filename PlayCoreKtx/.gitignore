@@ -7,3 +7,4 @@
 .externalNativeBuild
 release
 /.cxx
+play-key.json
