@@ -61,43 +61,43 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
 
     private fun getStatusLiveDataForModule(moduleName: String): LiveData<ModuleStatus> {
         return manager.requestProgressFlow()
-            .filter { state ->
-                state.moduleNames.contains(moduleName)
-            }
-            .map { state ->
-                Log.d("STATE", state.toString())
-                when (state.status) {
-                    SplitInstallSessionStatus.CANCELED -> Available
-                    SplitInstallSessionStatus.CANCELING -> Installing(0.0)
-                    SplitInstallSessionStatus.DOWNLOADED -> Installing(1.0)
-                    SplitInstallSessionStatus.DOWNLOADING -> Installing(
-                        state.bytesDownloaded.toDouble() / state.totalBytesToDownload
-                    )
-                    SplitInstallSessionStatus.FAILED -> {
-                        _events.send(InstallErrorEvent(state))
-                        Available
-                    }
-                    SplitInstallSessionStatus.INSTALLED -> Installed
-                    SplitInstallSessionStatus.INSTALLING -> Installing(1.0)
-                    SplitInstallSessionStatus.PENDING -> Installing(0.0)
-                    SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> NeedsConfirmation(
-                        state
-                    )
-                    SplitInstallSessionStatus.UNKNOWN -> Unavailable
-                    else -> Unavailable
+                .filter { state ->
+                    state.moduleNames.contains(moduleName)
                 }
-            }.catch {
-                _events.send(ToastEvent(
-                        "Something went wrong. No install progress will be reported."
+                .map { state ->
+                    Log.d("STATE", state.toString())
+                    when (state.status) {
+                        SplitInstallSessionStatus.CANCELED -> Available
+                        SplitInstallSessionStatus.CANCELING -> Installing(0.0)
+                        SplitInstallSessionStatus.DOWNLOADED -> Installing(1.0)
+                        SplitInstallSessionStatus.DOWNLOADING -> Installing(
+                                state.bytesDownloaded.toDouble() / state.totalBytesToDownload
+                        )
+                        SplitInstallSessionStatus.FAILED -> {
+                            _events.send(InstallErrorEvent(state))
+                            Available
+                        }
+                        SplitInstallSessionStatus.INSTALLED -> Installed
+                        SplitInstallSessionStatus.INSTALLING -> Installing(1.0)
+                        SplitInstallSessionStatus.PENDING -> Installing(0.0)
+                        SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION -> NeedsConfirmation(
+                                state
+                        )
+                        SplitInstallSessionStatus.UNKNOWN -> Unavailable
+                        else -> Unavailable
+                    }
+                }.catch {
+                    _events.send(ToastEvent(
+                            "Something went wrong. No install progress will be reported."
                     ))
-                emit(Unavailable)
-            }.asLiveData()
+                    emit(Unavailable)
+                }.asLiveData()
     }
 
     fun invokePictureSelection() {
         openActivityInOnDemandModule(
-            PICTURE_MODULE,
-            "com.google.android.samples.dynamicfeatures.ondemand.PaletteFragment"
+                PICTURE_MODULE,
+                "com.google.android.samples.dynamicfeatures.ondemand.PaletteFragment"
         )
     }
 
@@ -141,7 +141,7 @@ sealed class ModuleStatus {
 }
 
 class InstallViewModelProviderFactory(
-    private val manager: SplitInstallManager
+        private val manager: SplitInstallManager
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(SplitInstallManager::class.java).newInstance(manager)

@@ -26,8 +26,8 @@ class MainActivity : BaseSplitActivity() {
         setContentView(layout.activity_main)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().add(
-                id.mycontainer,
-                MainFragment()
+                    id.mycontainer,
+                    MainFragment()
             ).commit()
         }
     }

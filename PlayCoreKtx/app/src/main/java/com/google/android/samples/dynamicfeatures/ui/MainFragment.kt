@@ -15,18 +15,20 @@
  */
 package com.google.android.samples.dynamicfeatures.ui
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
@@ -82,6 +84,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     private val colorViewModel by activityViewModels<ColorViewModel>()
 
+    private lateinit var snackbar: Snackbar
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         splitInstallManager = SplitInstallManagerFactory.create(context)
@@ -91,18 +95,31 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         bindings = FragmentMainBinding.bind(view).apply {
-            btnInvokePalette.setOnClickListener { installViewModel.invokePictureSelection() }
-            btnUpdate.setOnClickListener {
-                updateViewModel.invokeUpdate()
+            btnInvokePalette.setOnClickListener {
+                installViewModel.invokePictureSelection()
+            }
+            btnToggleLight.setOnClickListener { light ->
+                val drawable = (light as ImageView).drawable as AnimatedVectorDrawable
+                val colorBackground = ContextCompat.getColor(requireContext(), R.color.background)
+                colorViewModel.backgroundColor.onEach {
+                    view.setBackgroundColor(if (btnToggleLight.tag == it) {
+                        drawable.reset()
+                        btnToggleLight.tag = colorBackground
+                        colorBackground
+                    } else {
+                        drawable.start()
+                        btnToggleLight.tag = it
+                        it
+                    })
+                }.launchIn(viewLifecycleOwner.lifecycleScope)
             }
         }
 
+        snackbar = Snackbar.make(view, R.string.update_available, Snackbar.LENGTH_INDEFINITE)
+
+
         addInstallViewModelObservers()
         addUpdateViewModelObservers()
-
-        colorViewModel.backgroundColor.onEach {
-            view.setBackgroundColor(it)
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun addInstallViewModelObservers() {
@@ -123,7 +140,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }.launchIn(viewLifecycleOwner.lifecycleScope)
             pictureModuleStatus.observe(viewLifecycleOwner, Observer { status ->
                 bindings?.let {
-                    updateModuleButton(it.btnInvokePalette, status)
+                    updateModuleButton(status)
                 }
             })
         }
@@ -163,9 +180,9 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         }
     }
 
-    private fun updateModuleButton(target: View, status: ModuleStatus) {
-        target.isEnabled = status !is ModuleStatus.Unavailable
-        bindings?.moduleState?.apply {
+    private fun updateModuleButton(status: ModuleStatus) {
+        bindings?.btnInvokePalette?.isEnabled = status !is ModuleStatus.Unavailable
+        with(bindings?.moduleState!!) {
             when (status) {
                 ModuleStatus.Available -> {
                     text = getString(R.string.install)
@@ -195,32 +212,38 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun updateUpdateButton(updateResult: AppUpdateResult) {
-        bindings?.let { bindings ->
-            when (updateResult) {
-                NotAvailable -> bindings.btnUpdate.visibility = View.GONE
-                is Available -> {
-                    with(bindings.btnUpdate) {
-                        visibility = View.VISIBLE
-                        isEnabled = true
-                        text = context.getString(R.string.start_update)
-                    }
+        when (updateResult) {
+            NotAvailable -> {
+                Log.d(TAG, "No update available")
+                snackbar.dismiss()
+            }
+            is Available -> with(snackbar) {
+                setText(R.string.update_available_snackbar)
+                setAction(R.string.update_now) {
+                    updateViewModel.invokeUpdate()
                 }
-                is InProgress -> {
-                    with(bindings.btnUpdate) {
-                        visibility = View.VISIBLE
-                        isEnabled = false
-                        val updateProgress =
-                                updateResult.installState.bytesDownloaded * 100 /
-                                        updateResult.installState.totalBytesToDownload
-                        text = context.getString(R.string.downloading_update, updateProgress)
+                show()
+            }
+            is InProgress -> {
+                with(snackbar) {
+                    val updateProgress: Int = if (updateResult.installState.totalBytesToDownload == 0L) {
+                        0
+                    } else {
+                        (updateResult.installState.bytesDownloaded * 100 /
+                                updateResult.installState.totalBytesToDownload).toInt()
                     }
+                    setText(context.getString(R.string.downloading_update, updateProgress))
+                    setAction(null) {}
+                    show()
                 }
-                is Downloaded -> {
-                    with(bindings.btnUpdate) {
-                        visibility = View.VISIBLE
-                        isEnabled = true
-                        text = context.getString(R.string.press_to_complete_update)
+            }
+            is Downloaded -> {
+                with(snackbar) {
+                    setText("Update downloaded successfully")
+                    setAction("Complete update") {
+                        updateViewModel.invokeUpdate()
                     }
+                    show()
                 }
             }
         }
@@ -229,9 +252,11 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onResume() {
         super.onResume()
         if (colorViewModel.shouldLaunchReview) {
+            colorViewModel.notifyReviewLaunchAttempted()
             viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-                val reviewInfo = reviewViewModel.getReviewInfo()
-                reviewManager.launchReview(requireActivity(), reviewInfo)
+                reviewViewModel.obtainReviewInfo()?.let { reviewInfo ->
+                    reviewManager.launchReview(requireActivity(), reviewInfo)
+                }
             }
         }
     }
@@ -239,24 +264,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onDestroyView() {
         bindings = null
         super.onDestroyView()
-    }
-
-    /** This is needed to handle the result of the manager.startConfirmationDialogForResult
-    request that can be made from SplitInstallSessionStatus.REQUIRES_USER_CONFIRMATION
-    in the listener above. */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // TODO might not be needed at all if we just get updates from Flow/LiveData???
-        if (requestCode == INSTALL_CONFIRMATION_REQ_CODE) {
-            // Handle the user's decision. For example, if the user selects "Cancel",
-            // you may want to disable certain functionality that depends on the module.
-            if (resultCode == Activity.RESULT_CANCELED) {
-//                toastAndLog(getString(R.string.user_cancelled))
-            }
-        } else if (requestCode == UPDATE_CONFIRMATION_REQ_CODE) {
-            // TODO Handle flexible updates by updating the UI
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
     }
 }
 

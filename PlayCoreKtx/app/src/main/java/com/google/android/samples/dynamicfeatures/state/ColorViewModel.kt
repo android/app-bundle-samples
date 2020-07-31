@@ -23,10 +23,9 @@ class ColorViewModel : ViewModel() {
     }
 
     var shouldLaunchReview: Boolean = false
-        get() {
-            val value = field
-            field = false
-            return value
-        }
-        private set(value) { field = value }
+        private set
+
+    fun notifyReviewLaunchAttempted() {
+        shouldLaunchReview = false
+    }
 }

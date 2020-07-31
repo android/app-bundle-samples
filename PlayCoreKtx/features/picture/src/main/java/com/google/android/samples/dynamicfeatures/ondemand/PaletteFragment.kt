@@ -110,9 +110,9 @@ class PaletteFragment : Fragment(R.layout.palette) {
     }
 
     override fun onResume() {
+        super.onResume()
         reviewViewModel.preWarmReview()
         if (!resultHandled) getPicturePreview.launch(null)
-        super.onResume()
     }
 
     override fun onDestroyView() {
