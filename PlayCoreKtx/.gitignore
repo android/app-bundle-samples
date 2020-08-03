@@ -1,0 +1,10 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+/build
+/captures
+.externalNativeBuild
+release
+/.cxx
+play-key.json
