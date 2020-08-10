@@ -1,8 +1,10 @@
 # Play Core sample
 This is an API sample to showcase the following parts of the Play Core library in Kotlin:
-* On-demand Play Feature Delivery
-* In-app Updates
-* In-app Reviews
+* [On-demand Play Feature Delivery](https://developer.android.com/guide/app-bundle/dynamic-delivery)
+* [In-app Updates](https://developer.android.com/guide/playcore/in-app-updates)
+* [In-app Reviews](https://developer.android.com/guide/playcore/in-app-review)
+  * For troubleshooting why the review dialog is not showing up please consult
+[Testing in-app reviews](https://developer.android.com/guide/playcore/in-app-review/test)
 
 # Overview
 ## Functionality

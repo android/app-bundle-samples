@@ -27,7 +27,7 @@
     <string name="feature_not_available">Feature not available</string>
     <string name="confirm">Confirm</string>
     <string name="start_update">Start update</string>
-    <string name="downloading_update">Downloading update… %1$d%</string>
+    <string name="downloading_update">Downloading update… %1$d</string>
     <string name="click_to_complete_update">Click here to complete update</string>
     <string name="not_enough_memory">Your device has too little available memory to perform this action right now.<br/> Please select another action in the main screen.</string>
 
