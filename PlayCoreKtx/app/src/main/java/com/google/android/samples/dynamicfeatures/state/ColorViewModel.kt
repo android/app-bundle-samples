@@ -20,28 +20,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ColorViewModel : ViewModel() {
+    /** Controls whether the flashlight is on */
+    val lightsOn = MutableStateFlow<Boolean>(false)
+
     val backgroundColor = MutableStateFlow(Color.YELLOW)
-    var ignoreFirstValue = true
 
-    init {
-        backgroundColor.onEach {
-            if (ignoreFirstValue) {
-                ignoreFirstValue = false
-            } else {
-                shouldLaunchReview = true
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    var shouldLaunchReview: Boolean = false
+    /** Indicates whether the color was last set as a result of using the photo color picker. */
+    var colorWasPicked: Boolean = false
         private set
 
-    fun notifyReviewLaunchAttempted() {
-        shouldLaunchReview = false
+    init {
+        backgroundColor
+                .drop(1) // ignore first value that is set above
+                .onEach {
+                    colorWasPicked = true
+                }.launchIn(viewModelScope)
+    }
+
+    fun notifyPickedColorConsumed() {
+        colorWasPicked = false
     }
 }

@@ -69,10 +69,10 @@ class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
                     when (state.status) {
                         SplitInstallSessionStatus.CANCELED -> Available
                         SplitInstallSessionStatus.CANCELING -> Installing(0.0)
-                        SplitInstallSessionStatus.DOWNLOADED -> Installing(1.0)
                         SplitInstallSessionStatus.DOWNLOADING -> Installing(
                                 state.bytesDownloaded.toDouble() / state.totalBytesToDownload
                         )
+                        SplitInstallSessionStatus.DOWNLOADED -> Installed
                         SplitInstallSessionStatus.FAILED -> {
                             _events.send(InstallErrorEvent(state))
                             Available

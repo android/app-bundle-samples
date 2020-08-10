@@ -20,7 +20,6 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -59,6 +58,7 @@ import com.google.android.samples.dynamicfeatures.state.ReviewViewModelProviderF
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModel
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModelProviderFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -80,7 +80,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private lateinit var reviewManager: ReviewManager
-    private val reviewViewModel by viewModels<ReviewViewModel> {
+    private val reviewViewModel by activityViewModels<ReviewViewModel> {
         ReviewViewModelProviderFactory(reviewManager)
     }
 
@@ -101,26 +101,40 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 startModuleWhenReady = true
                 installViewModel.invokePictureSelection()
             }
+
             btnToggleLight.setOnClickListener { light ->
                 startModuleWhenReady = false
-                val drawable = (light as ImageView).drawable as AnimatedVectorDrawable
-                val colorBackground = ContextCompat.getColor(requireContext(), R.color.background)
-                colorViewModel.backgroundColor.onEach {
-                    view.setBackgroundColor(if (btnToggleLight.tag == it) {
-                        drawable.reset()
-                        btnToggleLight.tag = colorBackground
-                        colorBackground
-                    } else {
+                colorViewModel.lightsOn.value = !colorViewModel.lightsOn.value
+            }
+
+            val colorBackgroundOff = ContextCompat.getColor(requireContext(), R.color.background)
+            val drawable = btnToggleLight.drawable as AnimatedVectorDrawable
+            viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+                colorViewModel.lightsOn.collect { lightsOn: Boolean ->
+                    if (lightsOn) {
+                        // The user has turned on the flashlight.
                         drawable.start()
-                        btnToggleLight.tag = it
-                        it
-                    })
-                }.launchIn(viewLifecycleOwner.lifecycleScope)
+                        view.setBackgroundColor(colorViewModel.backgroundColor.value)
+                    } else {
+                        // The user has turned off the flashlight. Reset the icon and color:
+                        drawable.reset()
+                        view.setBackgroundColor(colorBackgroundOff)
+                        // then check if the color was picked from a photo,
+                        // and launch a review if yes:
+                        if (colorViewModel.colorWasPicked) {
+                            colorViewModel.notifyPickedColorConsumed()
+                            val reviewInfo = reviewViewModel.obtainReviewInfo()
+                            if (reviewInfo != null) {
+                                reviewManager.launchReview(requireActivity(), reviewInfo)
+                                reviewViewModel.notifyAskedForReview()
+                            }
+                        }
+                    }
+                }
             }
         }
 
         snackbar = Snackbar.make(view, R.string.update_available, Snackbar.LENGTH_INDEFINITE)
-
 
         addInstallViewModelObservers()
         addUpdateViewModelObservers()
@@ -255,18 +269,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                         updateViewModel.invokeUpdate()
                     }
                     show()
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (colorViewModel.shouldLaunchReview) {
-            colorViewModel.notifyReviewLaunchAttempted()
-            viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-                reviewViewModel.obtainReviewInfo()?.let { reviewInfo ->
-                    reviewManager.launchReview(requireActivity(), reviewInfo)
                 }
             }
         }

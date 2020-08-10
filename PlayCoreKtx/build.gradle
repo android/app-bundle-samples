@@ -32,7 +32,7 @@ buildscript {
             'lifecycle'         : '2.3.0-alpha06',
             'material'          : '1.2.0-rc01',
             'playcore'          : '1.8.0',
-            'playcoreKtx'       : '1.8.0',
+            'playcoreKtx'       : '1.8.1',
             'testRules'         : '1.1.1',
             'testRunner'        : '1.1.1',
     ]
@@ -45,7 +45,7 @@ buildscript {
         ext.names["applicationId"] = project.packageNameOverride
     }
 
-    println(ext.names.applicationId)
+    println("Application ID: " + ext.names.applicationId)
 
     repositories {
         google()
@@ -62,8 +62,8 @@ buildscript {
 
 allprojects {
     repositories {
-        maven {
-            url = "file:///Users/benweiss/Downloads/m2"
+        if (project.hasProperty("useLocalMaven")) {
+            mavenLocal()
         }
         google()
         jcenter()
