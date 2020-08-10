@@ -45,4 +45,3 @@ interface StorageFeature {
         fun getLogger(): Logger
     }
 }
-

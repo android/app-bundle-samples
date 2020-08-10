@@ -50,14 +50,12 @@ android {
     packagingOptions {
         exclude("META-INF/**.version")
     }
-
 }
 
 dependencies {
-    api("androidx.navigation:navigation-dynamic-features-fragment:2.3.0-alpha05")
+    api("androidx.navigation:navigation-dynamic-features-fragment:2.3.0")
     api("androidx.appcompat:appcompat:1.1.0")
     api("androidx.constraintlayout:constraintlayout:1.1.3")
-    implementation("com.google.android.play:core:1.6.5")
 }
 
 val bundletoolJar = project.rootDir.resolve("third_party/bundletool/bundletool-all-0.13.0.jar")
@@ -91,7 +89,6 @@ android.applicationVariants.all(object : Action<ApplicationVariant> {
                     args = listOf("install-apks", "--apks", outputPath)
                     dependsOn("buildApks${variant.name.capitalize()}")
                 }
-
             }
         }
     }

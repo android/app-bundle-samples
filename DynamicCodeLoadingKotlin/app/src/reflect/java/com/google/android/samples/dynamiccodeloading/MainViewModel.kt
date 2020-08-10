@@ -23,7 +23,7 @@ import android.util.Log
 const val PROVIDER_CLASS = "com.google.android.samples.storage.StorageFeatureImpl\$Provider"
 
 class MainViewModel(app: Application) : AbstractMainViewModel(app) {
-    override fun initializeStorageFeature()  {
+    override fun initializeStorageFeature() {
         // We will need this to pass in dependencies to the StorageFeature.Provider
         val dependencies = object : StorageFeature.Dependencies {
             override fun getContext(): Context = getApplication()

@@ -27,5 +27,4 @@ class MaxSdkSampleActivity : BaseSplitActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feature_maxsdk)
     }
-
 }

@@ -27,7 +27,7 @@ android {
     }
 
     // Switch between test types by swapping commented out state
-    testBuildType /* 'debug' */  'minified'
+    testBuildType /* 'debug' */ 'minified'
 
     buildTypes {
         minified {

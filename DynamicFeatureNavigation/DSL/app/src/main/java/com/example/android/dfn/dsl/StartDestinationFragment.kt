@@ -66,5 +66,4 @@ class StartDestinationFragment : Fragment(R.layout.start_destination_fragment) {
     companion object {
         private const val TAG = "StartDestinationFragmen"
     }
-
 }

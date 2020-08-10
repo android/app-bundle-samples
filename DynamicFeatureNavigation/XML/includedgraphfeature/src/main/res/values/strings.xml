@@ -16,4 +16,5 @@
 
 <resources>
     <string name="hello_included_feature_fragment">This is a Fragment within a dynamic feature module. It can be attached from within an included graph.</string>
+    <string name="navigate_to_nested_graph">Navigate to nested graph</string>
 </resources>

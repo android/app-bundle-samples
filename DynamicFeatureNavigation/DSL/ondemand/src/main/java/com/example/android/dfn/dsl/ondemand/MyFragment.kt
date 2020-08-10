@@ -18,4 +18,4 @@ package com.example.android.dfn.dsl.ondemand
 
 import androidx.fragment.app.Fragment
 
-class MyFragment: Fragment(R.layout.my_fragment)
+class MyFragment : Fragment(R.layout.my_fragment)
