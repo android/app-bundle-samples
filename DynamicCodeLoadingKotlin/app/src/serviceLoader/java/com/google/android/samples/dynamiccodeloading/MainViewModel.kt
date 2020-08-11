@@ -19,6 +19,7 @@ package com.google.android.samples.dynamiccodeloading
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import java.util.ServiceLoader
 
 /**
  * An implementation of our ViewModel that uses ServiceLoader.
