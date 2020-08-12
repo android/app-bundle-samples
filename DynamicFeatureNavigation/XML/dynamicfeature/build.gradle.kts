@@ -32,8 +32,24 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 
 dependencies {
     implementation(project(":app"))
+
+    // Testing
+    debugImplementation("androidx.fragment:fragment-testing:1.2.5")
+
+    // Testing - JVM
+    testImplementation("androidx.test.ext:junit:1.1.1")
+    testImplementation("androidx.test.ext:truth:1.2.0")
+    testImplementation("org.robolectric:robolectric:4.3.1")
+    testImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    testImplementation("androidx.test.espresso:espresso-contrib:3.2.0")
+    testImplementation("androidx.test.espresso:espresso-intents:3.2.0")
+    testImplementation("androidx.navigation:navigation-testing:2.3.0")
 }
