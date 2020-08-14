@@ -16,6 +16,7 @@
 package com.google.android.samples.dynamicfeatures.state
 
 import android.graphics.Color
+import androidx.annotation.Keep
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

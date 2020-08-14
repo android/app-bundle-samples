@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -59,10 +60,12 @@ import com.google.android.samples.dynamicfeatures.state.UpdateViewModel
 import com.google.android.samples.dynamicfeatures.state.UpdateViewModelProviderFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Keep
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     private var bindings: FragmentMainBinding? = null
@@ -110,27 +113,31 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             val colorBackgroundOff = ContextCompat.getColor(requireContext(), R.color.background)
             val drawable = btnToggleLight.drawable as AnimatedVectorDrawable
             viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-                colorViewModel.lightsOn.collect { lightsOn: Boolean ->
-                    if (lightsOn) {
-                        // The user has turned on the flashlight.
-                        drawable.start()
-                        view.setBackgroundColor(colorViewModel.backgroundColor.value)
-                    } else {
-                        // The user has turned off the flashlight. Reset the icon and color:
-                        drawable.reset()
-                        view.setBackgroundColor(colorBackgroundOff)
-                        // then check if the color was picked from a photo,
-                        // and launch a review if yes:
-                        if (colorViewModel.colorWasPicked) {
-                            colorViewModel.notifyPickedColorConsumed()
-                            val reviewInfo = reviewViewModel.obtainReviewInfo()
-                            if (reviewInfo != null) {
-                                reviewManager.launchReview(requireActivity(), reviewInfo)
-                                reviewViewModel.notifyAskedForReview()
+                colorViewModel.lightsOn
+                        .onEach { lightsOn: Boolean ->
+                            if (lightsOn) {
+                                // The user has turned on the flashlight.
+                                drawable.start()
+                                view.setBackgroundColor(colorViewModel.backgroundColor.value)
+                            } else {
+                                // The user has turned off the flashlight. Reset the icon and color:
+                                drawable.reset()
+                                view.setBackgroundColor(colorBackgroundOff)
                             }
                         }
-                    }
-                }
+                        .drop(1) // for launching the review ignore the starting value
+                        .collect { lightsOn ->
+                            // Check if the color was picked from a photo,
+                            // and launch a review if yes:
+                            if (!lightsOn && colorViewModel.colorWasPicked) {
+                                colorViewModel.notifyPickedColorConsumed()
+                                val reviewInfo = reviewViewModel.obtainReviewInfo()
+                                if (reviewInfo != null) {
+                                    reviewManager.launchReview(requireActivity(), reviewInfo)
+                                    reviewViewModel.notifyAskedForReview()
+                                }
+                            }
+                        }
             }
         }
 
