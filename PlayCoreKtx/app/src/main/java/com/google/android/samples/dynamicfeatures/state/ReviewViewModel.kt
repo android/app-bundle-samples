@@ -15,6 +15,7 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
+import androidx.annotation.Keep
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -28,7 +29,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
-class ReviewViewModel(private val reviewManager: ReviewManager) : ViewModel() {
+class ReviewViewModel @Keep constructor(private val reviewManager: ReviewManager) : ViewModel() {
     /**
      * For this sample, we check if the user has been asked to review during this application session
      * already. Every time the app process starts fresh, it will be reset.
