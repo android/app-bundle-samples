@@ -28,6 +28,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -63,6 +64,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Keep
@@ -184,9 +186,27 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun addUpdateViewModelObservers() {
         with(updateViewModel) {
             updateStatus.observe(
-                    viewLifecycleOwner, Observer { updateResult: AppUpdateResult ->
-                updateUpdateButton(updateResult)
-            })
+                    viewLifecycleOwner,
+                    { updateResult: AppUpdateResult ->
+                        updateUpdateButton(updateResult)
+
+                        // If it's an immediate update, launch it immediately and finish Activity
+                        // to prevent the user from using the app until they update.
+                        if (updateResult is Available) {
+                            if (shouldLaunchImmediateUpdate(updateResult.updateInfo)) {
+                                if (appUpdateManager.startUpdateFlowForResult(
+                                        updateResult.updateInfo,
+                                        AppUpdateType.IMMEDIATE,
+                                        this@MainFragment,
+                                        UPDATE_CONFIRMATION_REQ_CODE
+                                )) {
+                                    // only exit if update flow really started
+                                    requireActivity().finish()
+                                }
+                            }
+                        }
+                    }
+            )
             events.onEach { event ->
                 when (event) {
                     is Event.ToastEvent -> toastAndLog(event.message)
