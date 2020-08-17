@@ -16,6 +16,7 @@
 package com.google.android.samples.dynamicfeatures.state
 
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -52,7 +53,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-class InstallViewModel(private val manager: SplitInstallManager) : ViewModel() {
+class InstallViewModel @Keep constructor(private val manager: SplitInstallManager) : ViewModel() {
 
     val pictureModuleStatus = getStatusLiveDataForModule(PICTURE_MODULE)
 

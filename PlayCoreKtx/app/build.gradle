@@ -39,12 +39,25 @@ android {
         viewBinding = true
     }
 
+    signingConfigs {
+        if (project.hasProperty("signing.storeFile")) {
+            release {
+                keyAlias project['signing.keyAlias']
+                keyPassword project['signing.keyPassword']
+                storeFile file(project['signing.storeFile'])
+                storePassword project['signing.storePassword']
+            }
+        }
+    }
+
     buildTypes {
         debug {}
         release {
             minifyEnabled true
+            signingConfig signingConfigs.release
         }
     }
+
 
     compileOptions {
         sourceCompatibility = '1.8'
@@ -64,6 +77,7 @@ android {
 
 play {
     serviceAccountCredentials = file("../play-key.json")
+    updatePriority = 5
 }
 
 dependencies {

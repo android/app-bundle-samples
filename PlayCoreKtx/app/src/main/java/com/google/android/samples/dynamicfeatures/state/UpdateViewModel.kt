@@ -15,6 +15,8 @@
  */
 package com.google.android.samples.dynamicfeatures.state
 
+import android.util.Log
+import androidx.annotation.Keep
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -38,7 +40,7 @@ import kotlinx.coroutines.launch
  * ViewModel for InAppUpdates.
  */
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
+class UpdateViewModel @Keep constructor(manager: AppUpdateManager) : ViewModel() {
     val updateStatus = manager.requestUpdateFlow().catch {
         _events.send(Event.ToastEvent("Update info not available"))
     }.asLiveData()
@@ -53,6 +55,7 @@ class UpdateViewModel(manager: AppUpdateManager) : ViewModel() {
             }
             is AppUpdateResult.Available -> {
                 with(updateResult.updateInfo) {
+                    Log.d(TAG, "Update priority: $updatePriority")
                     if (isImmediateUpdateAllowed
                             &&
                             (clientVersionStalenessDays ?: 0 > 7
@@ -87,3 +90,5 @@ class UpdateViewModelProviderFactory(
         return modelClass.getConstructor(AppUpdateManager::class.java).newInstance(manager)
     }
 }
+
+const val TAG = "UpdateViewModel"
