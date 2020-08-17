@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.ktx.AppUpdateResult
 import com.google.android.play.core.ktx.clientVersionStalenessDays
@@ -34,6 +35,7 @@ import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -41,12 +43,23 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class UpdateViewModel @Keep constructor(manager: AppUpdateManager) : ViewModel() {
-    val updateStatus = manager.requestUpdateFlow().catch {
-        _events.send(Event.ToastEvent("Update info not available"))
-    }.asLiveData()
+    val updateStatus = manager.requestUpdateFlow()
+            .catch {
+                _events.send(Event.ToastEvent("Update info not available"))
+            }
+            .asLiveData()
 
     private val _events = BroadcastChannel<Event>(Channel.BUFFERED)
     val events = _events.asFlow()
+
+    fun shouldLaunchImmediateUpdate(updateInfo: AppUpdateInfo): Boolean {
+        with(updateInfo) {
+            return isImmediateUpdateAllowed
+                    &&
+                    (clientVersionStalenessDays ?: 0 > 30
+                            || updatePriority > 4)
+        }
+    }
 
     fun invokeUpdate() {
         when (val updateResult = updateStatus.value) {
@@ -56,20 +69,20 @@ class UpdateViewModel @Keep constructor(manager: AppUpdateManager) : ViewModel()
             is AppUpdateResult.Available -> {
                 with(updateResult.updateInfo) {
                     Log.d(TAG, "Update priority: $updatePriority")
-                    if (isImmediateUpdateAllowed
-                            &&
-                            (clientVersionStalenessDays ?: 0 > 7
-                                    || updatePriority > 4)
-                    ) {
-                        viewModelScope.launch {
-                            _events.send(Event.StartUpdateEvent(updateResult.updateInfo, true))
+                    when {
+                        shouldLaunchImmediateUpdate(this) -> {
+                            viewModelScope.launch {
+                                _events.send(Event.StartUpdateEvent(updateResult.updateInfo, true))
+                            }
                         }
-                    } else if (isFlexibleUpdateAllowed) {
-                        viewModelScope.launch {
-                            _events.send(Event.StartUpdateEvent(updateResult.updateInfo, false))
+                        isFlexibleUpdateAllowed -> {
+                            viewModelScope.launch {
+                                _events.send(Event.StartUpdateEvent(updateResult.updateInfo, false))
+                            }
                         }
-                    } else {
-                        throw IllegalStateException("Not implemented: Handling for $this")
+                        else -> {
+                            throw IllegalStateException("Not implemented: Handling for $this")
+                        }
                     }
                 }
             }
