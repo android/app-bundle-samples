@@ -54,7 +54,9 @@ android {
         debug {}
         release {
             minifyEnabled true
-            signingConfig signingConfigs.release
+            if (project.hasProperty("signing.storeFile")) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -66,13 +68,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 
     dynamicFeatures = [':features:picture']
-
-    kotlinOptions {
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-    }
 }
 
 play {
