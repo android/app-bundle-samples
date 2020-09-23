@@ -107,7 +107,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
                 installViewModel.invokePictureSelection()
             }
 
-            btnToggleLight.setOnClickListener { _ ->
+            btnToggleLight.setOnClickListener {
                 startModuleWhenReady = false
                 colorViewModel.lightsOn.value = !colorViewModel.lightsOn.value
             }

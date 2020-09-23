@@ -28,7 +28,7 @@ import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
+import androidx.lifecycle.Observer
 import androidx.palette.graphics.Palette.Swatch
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -83,12 +83,12 @@ class PaletteFragment : Fragment(R.layout.palette) {
             adapter = instantiatePaletteAdapter()
         }
 
-        paletteViewModel.swatches.observe(viewLifecycleOwner) {
+        paletteViewModel.swatches.observe(viewLifecycleOwner, Observer {
             if (it.isEmpty()) {
                 Log.w(TAG, "Issue generating Palette, attempting to get new picture.")
                 getPicturePreview.launch(null)
             }
-        }
+        })
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -102,10 +102,10 @@ class PaletteFragment : Fragment(R.layout.palette) {
                 items = paletteViewModel.swatches.value!!
                 notifyDataSetChanged()
             }
-            paletteViewModel.swatches.observe(viewLifecycleOwner) { swatchList ->
-                items = swatchList
+            paletteViewModel.swatches.observe(viewLifecycleOwner, Observer {
+                items = it
                 notifyDataSetChanged()
-            }
+            })
         }
     }
 
