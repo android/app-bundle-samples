@@ -2,13 +2,17 @@
 
 This sample demonstrates usage of the PlayCore API.
 
-Read more at http://g.co/androidappbundle
+* Read more about :
+  - Android App Bundle (.aab) at http://g.co/androidappbundle
+  - Google Play Core Library at https://d.android.com/guide/playcore
+ 
+ ## Introduction
 
-## Introduction
+The sample contains several modules and describes the use of 
+PlayCore API to make modular android applications.
 
-The sample contains several modules.
-
-`app` -> Contains the base application which always will be installed on device.
+`app` -> Contains the base application which always will be installed on device,
+all other modules (instant/on-demand) are installed after this.
 
 The `MainActivity` class demonstrates how to use the API to load and launch features.
 
@@ -16,34 +20,32 @@ The `BaseSplitActivity` abstract class implements the required `SplitCompat.Inst
 in the `attachBaseContext` method. This allow to launch an activity from a freshly downloaded
 dynamic module without having the restart the application.
 
-`features/*` -> Contains features which can be downloaded on demand using the PlayCore API.
-`instant/*` -> Contains instant enabled features which can be downloaded using the PlayCore API or via Url.
+The `AndroidManifest` file of each feature module shows how to declare it as a part of a dynamic app.
 
-Each feature as some distinctly unique characteristics.
-
-`features/assets` -> Feature containing only assets.
-`features/kotlin` -> Feature written in Kotlin.
-`features/java` -> Feature written in Java.
-`features/maxSdk` -> Conditionally delivered feature based on max sdk version
-`features/native` -> Feature written in Kotlin using JNI.
-`instant/split` -> Instant Feature without an URL route. Loaded using Split
-Install API
-`instant/url` -> Instant Feature with a URL route
-
-The `AndroidManifest` files in each feature show
-how to declare a feature module as part of a dynamic app. Any module with the
-instant attribute is instant enabled. In this sample these can be found in the
-`instant/` folder:
-
+Any module having the instant attribute in its manifest file is instant enabled:
 ```
   <dist:module
     dist:instant="true"/>
 ```
 
+## Modules
+
+Each feature module holds a distinctly unique characteristic.
+
+* `features/*` → Contains features which can be downloaded on demand using the PlayCore API.
+    - `features/assets` → Feature containing only assets.
+    - `features/kotlin` → Feature written in Kotlin.
+    - `features/java` → Feature written in Java.
+    - `features/maxSdk` → Conditionally delivered feature based on max sdk version
+    - `features/native` → Feature written in Kotlin using JNI.
+    
+* `instant/*` → Contains instant enabled features which can be downloaded using the PlayCore API or via URL.
+    - `instant/split` → Instant Feature without an URL route. Loaded using Split Install API
+    - `instant/url` → Instant Feature with a URL route
+
 ## Screenshots
 
 <img src="screenshots/main.png" width="30%" />
-
 
 ## Getting Started
 
@@ -52,8 +54,8 @@ to get an overview of all the tasks available for this project.
 
 ## Testing dynamic delivery
 
-To test dynamic delivery with this sample, you'll need to upload it to the Google Play Store's
-internal testing channel.
+To test dynamic delivery with this sample, you'll need to upload it to the [Google Play Store's
+internal testing channel](https://support.google.com/googleplay/android-developer/answer/3131213).
 
 Before uploading, make sure to change the `applicationId` in `app/build.gradle`.
 
