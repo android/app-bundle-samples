@@ -40,9 +40,19 @@ android {
         }
     }
 
+    useLibrary("android.test.runner")
+    useLibrary("android.test.base")
+    useLibrary("android.test.mock")
+
+    testOptions.unitTests.isIncludeAndroidResources = true
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     dynamicFeatures = mutableSetOf(":dynamicfeature", ":includedgraphfeature")
@@ -54,8 +64,20 @@ android {
 
 dependencies {
     api("androidx.navigation:navigation-dynamic-features-fragment:2.3.0")
-    api("androidx.appcompat:appcompat:1.1.0")
+    api("androidx.appcompat:appcompat:1.2.0")
     api("androidx.constraintlayout:constraintlayout:1.1.3")
+
+    // Testing
+    debugImplementation("androidx.fragment:fragment-testing:1.2.5")
+
+    // Testing - JVM
+    testImplementation("androidx.test.ext:junit:1.1.1")
+    testImplementation("androidx.test.ext:truth:1.2.0")
+    testImplementation("org.robolectric:robolectric:4.3.1")
+    testImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    testImplementation("androidx.test.espresso:espresso-contrib:3.2.0")
+    testImplementation("androidx.test.espresso:espresso-intents:3.2.0")
+    testImplementation("androidx.navigation:navigation-testing:2.3.0")
 }
 
 val bundletoolJar = project.rootDir.resolve("third_party/bundletool/bundletool-all-0.13.0.jar")
