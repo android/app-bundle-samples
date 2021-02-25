@@ -1,5 +1,7 @@
 # Android Instant Apps - Install API sample
+Demonstrates how to use the Install API (Instant Apps).
 
+## Introduction
 This sample app demonstrates how to use the [Install API](https://developers.google.com/android/reference/com/google/android/gms/instantapps/InstantApps.html#showInstallPrompt(android.app.Activity,%20android.content.Intent,%20int,%20java.lang.String)).
 
 The API triggers Intent to install the app on device.
