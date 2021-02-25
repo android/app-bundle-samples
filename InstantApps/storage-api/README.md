@@ -1,5 +1,7 @@
 # Android Instant Apps - Storage API sample
+Demonstrates how to use the Storage API (Instant Apps).
 
+## Introduction
 This sample app demonstrates how to use the Storage API.
 
 It is relevant to devices running on Android versions
