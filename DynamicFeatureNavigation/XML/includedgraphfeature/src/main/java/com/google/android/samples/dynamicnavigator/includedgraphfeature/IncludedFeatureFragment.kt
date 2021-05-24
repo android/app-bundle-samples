@@ -16,6 +16,8 @@
 
 package com.google.android.samples.dynamicnavigator.includedgraphfeature
 
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.samples.dynamicnavigator.R as baseR
