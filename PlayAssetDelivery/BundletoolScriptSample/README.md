@@ -139,6 +139,28 @@ $ add_packs.py \
   --output ~/aug.aab
 ```
 
+### Generating Asset Only Bundles
+
+To generate an Android App Bundle containing only some asset packs, and no code, you should follow these steps:
+
+* build each asset pack individually with `generate_asset_pack.py`, like above
+* run `create_asset_only_bundle.sh` to package them into a bundle
+
+```
+$ sh create_asset_only_bundle.sh
+    --android-sdk=${HOME}/Android/Sdk
+    --bundletool=/google/bin/releases/bundletool/public/bundletool-all.jar
+    --output=output_directory/output_bundle.aab
+    --packdir=dir/containing/my/packs/
+    --packs=assetpack1,assetpack2
+    --tmpdir=/tmp/my-assetonly-tmp-dir/
+    --app-versions=10,12
+    --version-tag=mynewassets
+    [--ks=dir/to/keystore]
+    [--key=your-key]
+    [--ks_password=your-pw]
+```
+
 ## Misc
 
 ### Python Source File for App Bundle Config Proto
