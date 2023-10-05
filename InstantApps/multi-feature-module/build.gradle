@@ -17,8 +17,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 ext {
-    compileSdk = 28
-    targetSdk = 28
+    compileSdk = 32
+    targetSdk = 32
     minSdk = 21
     versionCode = 1
     versionName = "1.0"
