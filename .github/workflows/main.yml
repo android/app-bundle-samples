@@ -24,5 +24,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         
-      - name: Build project 
+      - name: Build DynamicCodeLoadingKotlin 
+        working-directory: ./DynamicCodeLoadingKotlin
         run: ./gradlew :app:assembleDebug
