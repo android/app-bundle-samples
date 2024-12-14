@@ -61,12 +61,12 @@ dependencies {
     // Libraries which can be re-used in other modules should use the `api` keyword.
     // This way they can be shared with dependent feature modules.
 
-    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.annotation:annotation:1.9.1'
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     api "androidx.appcompat:appcompat:${versions.appcompat}"
-    api 'androidx.constraintlayout:constraintlayout:2.0.0'
-    api 'com.google.android.material:material:1.0.0'
+    api 'androidx.constraintlayout:constraintlayout:2.2.0'
+    api 'com.google.android.material:material:1.12.0'
     api "com.google.android.play:core:${versions.playcore}"
 
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
