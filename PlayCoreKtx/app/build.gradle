@@ -102,7 +102,7 @@ configurations {
 }
 
 dependencies {
-    ktlint "com.pinterest:ktlint:0.36.0"
+    ktlint "com.pinterest:ktlint:0.51.0-FINAL"
 }
 
 task ktlint(type: JavaExec, group: "cleanup") {
