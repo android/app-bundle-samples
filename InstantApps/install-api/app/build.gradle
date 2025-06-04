@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-instantapps:16.0.1'
+    implementation 'com.google.android.gms:play-services-instantapps:18.1.0'
     implementation "androidx.appcompat:appcompat:$appCompat"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

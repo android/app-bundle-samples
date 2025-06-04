@@ -46,6 +46,6 @@ dependencies {
     application project(":installed")
     feature project(':features:install')
     api "androidx.appcompat:appcompat:$appCompat"
-    api 'com.google.android.gms:play-services-instantapps:16.0.0'
+    api 'com.google.android.gms:play-services-instantapps:18.1.0'
 }
 
