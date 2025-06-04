@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.4.32'
+    ext.kotlin_version = '2.1.21'
     repositories {
         maven {
             url "http://storage.googleapis.com/r8-releases/raw/master"
@@ -11,8 +11,8 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools:r8:2.2.64'  // Must be before the Gradle Plugin for Android.
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools:r8:8.9.35'  // Must be before the Gradle Plugin for Android.
+        classpath 'com.android.tools.build:gradle:8.10.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
