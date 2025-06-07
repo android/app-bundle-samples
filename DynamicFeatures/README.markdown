@@ -47,7 +47,7 @@ Clone this repository, enter the top level directory and run <code>./gradlew tas
 
 To test dynamic delivery with this sample, you can follow any of the below steps:
 * Upload the aab to the Google Play Store's internal testing channel. Before uploading, make sure to change the `applicationId` in `app/build.gradle`.
-* Locally test the dynamic delivery by using [FakeSplitInstallManager](https://developer.android.com/guide/app-bundle/test/testing-fakesplitinstallmanager) and [bundletool](https://developer.android.com/studio/command-line/bundletool>bundletool):
+* Locally test the dynamic delivery by using [FakeSplitInstallManager](https://developer.android.com/guide/app-bundle/test/testing-fakesplitinstallmanager) and [bundletool](https://developer.android.com/studio/command-line/bundletool):
     1. Build a set of APKs: `bundletool build-apks --local-testing --bundle=<path_to_aab>  --output=<path_to_apks>`. _Make sure to include  --local-testing flag_
     2. Connect to the device/emulator
     3. Deploy app to the device: `bundletool install-apks --apks=<path_to_apks>`
