@@ -223,10 +223,10 @@ AssetPackDownloadStatus PrintDownloadState(struct android_app *app) {
  */
 void ShowCellularDataConfirmation(struct android_app *app) {
   AssetPackErrorCode error_code1 =
-      AssetPackManager_showCellularDataConfirmation(app->activity->clazz);
-  ShowCellularDataConfirmationStatus status;
+          AssetPackManager_showConfirmationDialog(app->activity->clazz);
+  ShowConfirmationDialogStatus status;
   AssetPackErrorCode error_code2 =
-      AssetPackManager_getShowCellularDataConfirmationStatus(&status);
+          AssetPackManager_getShowConfirmationDialogStatus(&status);
   char log[1000] = "";
   sprintf(log,
           "ShowCellularDataConfirmation, error_code=%d; Cellular data confirmation status=%d, error_code=%d",
