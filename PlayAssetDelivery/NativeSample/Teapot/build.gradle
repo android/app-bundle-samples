@@ -18,14 +18,14 @@
 apply plugin: 'com.android.application'
 
 // Wrap the relative path with file() since CMake requires an absolute path.
-def PLAY_CORE_NATIVE_SDK_DIR = file('../play-core-native-sdk')
+// def PLAY_CORE_NATIVE_SDK_DIR = file('../play-core-native-sdk')
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId = 'com.google.android.samples.playassetdeliverynative'
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0.0"
@@ -42,8 +42,8 @@ android {
         release {
             minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
-            proguardFile "$PLAY_CORE_NATIVE_SDK_DIR/proguard/asset_delivery.pgcfg"
-            proguardFile "$PLAY_CORE_NATIVE_SDK_DIR/proguard/common.pgcfg"
+            //proguardFile "$PLAY_CORE_NATIVE_SDK_DIR/proguard/asset_delivery.pgcfg"
+            //proguardFile "$PLAY_CORE_NATIVE_SDK_DIR/proguard/common.pgcfg"
         }
         debug {
             minifyEnabled false
@@ -55,6 +55,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     //All asset packs listed here will be included in the final AppBundle
     assetPacks = [":install_time_pack", ":on_demand_pack", ":fast_follow_pack"]
 
@@ -64,7 +69,14 @@ android {
 }
 
 dependencies {
+    // This dependency is downloaded from the Google's Maven repository.
+    // So, make sure you also include that repository in your project's build.gradle file.
+    implementation 'com.google.android.play:asset-delivery:2.3.0'
+
+    // For Kotlin users also add the Kotlin extensions library for Play Asset Delivery:
+    implementation 'com.google.android.play:asset-delivery-ktx:2.3.0'
+
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation files("$PLAY_CORE_NATIVE_SDK_DIR/playcore.aar")
+    //implementation files("$PLAY_CORE_NATIVE_SDK_DIR/playcore.aar")
 }
